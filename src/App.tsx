@@ -45,8 +45,88 @@ export default function App() {
   const [playerName, setPlayerName] = useState('');
   const [isHighScore, setIsHighScore] = useState(false);
   const [scoreSubmitted, setScoreSubmitted] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const nameInputRef = useRef<HTMLInputElement>(null);
   
   const gameRef = useRef<CyberInvaders | null>(null);
+
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [gameState]);
+
+  useEffect(() => {
+    if (selectedIndex === 0 && (gameState === 'VICTORY' || gameState === 'GAMEOVER') && isHighScore && !scoreSubmitted) {
+      nameInputRef.current?.focus();
+    }
+  }, [selectedIndex, gameState, isHighScore, scoreSubmitted]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Space'].includes(e.code)) {
+        // Only prevent default if we're in a menu state
+        if (['START', 'PLAYER_SELECT', 'MODE_SELECT', 'HIGH_SCORES', 'PAUSED', 'VICTORY', 'GAMEOVER'].includes(gameState)) {
+          // If we're typing in the high score input, don't navigate
+          if (document.activeElement?.tagName === 'INPUT') {
+            if (e.code === 'Enter') {
+              // Allow Enter to submit if focused on input
+              return;
+            }
+            if (e.code !== 'Escape') return;
+          }
+          e.preventDefault();
+        }
+      }
+
+      const navigate = (direction: 'up' | 'down' | 'left' | 'right') => {
+        setSelectedIndex(prev => {
+          if (gameState === 'START') {
+            if (direction === 'up' || direction === 'left') return prev === 0 ? 1 : 0;
+            if (direction === 'down' || direction === 'right') return prev === 1 ? 0 : 1;
+          }
+          if (gameState === 'PLAYER_SELECT') {
+            // 2x3 grid for characters (0-5)
+            if (direction === 'right') return (prev + 1) % 6;
+            if (direction === 'left') return (prev - 1 + 6) % 6;
+            if (direction === 'down') return (prev + 3) % 6;
+            if (direction === 'up') return (prev - 3 + 6) % 6;
+          }
+          if (gameState === 'MODE_SELECT') {
+            // 2x2 grid for modes (0-3)
+            if (direction === 'right') return prev % 2 === 0 ? prev + 1 : prev - 1;
+            if (direction === 'left') return prev % 2 === 1 ? prev - 1 : prev + 1;
+            if (direction === 'down') return (prev + 2) % 4;
+            if (direction === 'up') return (prev - 2 + 4) % 4;
+          }
+          if (gameState === 'PAUSED' || gameState === 'START') {
+            if (direction === 'up' || direction === 'down') return prev === 0 ? 1 : 0;
+          }
+          if (gameState === 'VICTORY' || gameState === 'GAMEOVER') {
+            const hasInput = isHighScore && !scoreSubmitted;
+            const max = hasInput ? 3 : 1;
+            if (direction === 'down') return (prev + 1) % (max + 1);
+            if (direction === 'up') return (prev - 1 + (max + 1)) % (max + 1);
+          }
+          return prev;
+        });
+      };
+
+      if (e.code === 'ArrowUp' || e.code === 'KeyW') navigate('up');
+      if (e.code === 'ArrowDown' || e.code === 'KeyS') navigate('down');
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') navigate('left');
+      if (e.code === 'ArrowRight' || e.code === 'KeyD') navigate('right');
+
+      if (e.code === 'Enter' || e.code === 'Space') {
+        // Trigger click on the selected element
+        const focusedElement = document.querySelector('.menu-focused') as HTMLElement;
+        if (focusedElement) {
+          focusedElement.click();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [gameState, isHighScore, scoreSubmitted]);
 
   useEffect(() => {
     const saved = localStorage.getItem('cyberInvadersHighScores');
@@ -169,10 +249,13 @@ export default function App() {
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1025]/80 z-20 rounded-xl overflow-y-auto no-scrollbar p-4">
             <div className="flex flex-col items-center mb-4 title-container mt-auto">
               <img 
-                src="https://raw.githubusercontent.com/Chimthuwu/UwU-Invaders/main/public/Logo-UwU-Invaders.png" 
+                src="https://i.ibb.co/sJ659Yzt/Logo-Uw-U-Invaders.png" 
+                onError={(e) => {
+                  e.currentTarget.src = "https://direct-seahorse.static2.website/9c28c780d721decb9acb0602ff6443ba.png";
+                }}
                 alt="UwU Invaders Logo" 
                 referrerPolicy="no-referrer"
-                className="h-32 md:h-48 lg:h-56 w-auto object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]"
+                className="h-32 md:h-48 lg:h-56 w-auto object-contain drop-shadow-[0_0_20px_rgba(255,156,230,0.6)]"
               />
             </div>
             <p className="text-pastel-blue text-lg md:text-xl mb-4 animate-pulse tracking-widest font-bold drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] text-shadow-sm">PRESS START TO PLAY ~</p>
@@ -183,7 +266,7 @@ export default function App() {
                   playStart();
                   setGameState('PLAYER_SELECT');
                 }}
-                className="kawaii-button kawaii-button-pink w-full py-2 md:py-3 text-xl md:text-2xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3 drop-shadow-md"
+                className={`kawaii-button kawaii-button-pink w-full py-2 md:py-3 text-xl md:text-2xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3 drop-shadow-md ${selectedIndex === 0 ? 'menu-focused' : ''}`}
               >
                 <Play className="star-icon w-6 h-6 md:w-8 md:h-8 fill-current" />
                 START
@@ -195,7 +278,7 @@ export default function App() {
                   playStart();
                   setGameState('HIGH_SCORES');
                 }}
-                className="kawaii-button kawaii-button-purple w-full py-2 md:py-3 text-xl md:text-2xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3 drop-shadow-md"
+                className={`kawaii-button kawaii-button-purple w-full py-2 md:py-3 text-xl md:text-2xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3 drop-shadow-md ${selectedIndex === 1 ? 'menu-focused' : ''}`}
               >
                 <Trophy className="w-6 h-6 md:w-8 md:h-8 fill-current" />
                 HIGH SCORES
@@ -217,8 +300,9 @@ export default function App() {
             
             <div className="w-full max-w-4xl flex-1 flex flex-col justify-center px-2 pb-16 md:pb-20">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                {GAME_MODES.map((mode) => {
+                {GAME_MODES.map((mode, index) => {
                   const isSelected = selectedModeId === mode.id;
+                  const isFocused = selectedIndex === index;
                   
                   let difficultyColor = "text-pastel-blue";
                   if (mode.difficulty === "Normal") difficultyColor = "text-pastel-purple";
@@ -228,12 +312,18 @@ export default function App() {
                   return (
                     <div 
                       key={mode.id}
-                      onClick={() => setSelectedModeId(mode.id as 'CLASSIC' | 'RETROWO' | 'SURVIVAL' | 'KAWAII')}
+                      onClick={() => {
+                        setSelectedModeId(mode.id as 'CLASSIC' | 'RETROWO' | 'SURVIVAL' | 'KAWAII');
+                        playStart();
+                        gameRef.current?.setGameMode(mode.id as 'CLASSIC' | 'RETROWO' | 'SURVIVAL' | 'KAWAII');
+                        gameRef.current?.startGame();
+                      }}
                       className={`relative p-3 md:p-4 rounded-xl md:rounded-2xl cursor-pointer transition-all duration-300 border-2 flex flex-col gap-1 md:gap-2
                         ${isSelected 
                           ? 'bg-[#2a1b3d] border-pastel-pink shadow-[0_0_15px_rgba(255,179,240,0.4)] transform scale-[1.02] z-10' 
                           : 'bg-[#1a1025] border-slate-700 hover:border-pastel-purple hover:bg-[#201530]'
                         }
+                        ${isFocused ? 'menu-focused' : ''}
                       `}
                     >
                       <div className="flex justify-between items-start">
@@ -254,27 +344,6 @@ export default function App() {
                 })}
               </div>
             </div>
-
-            {/* Play Button */}
-            <div className="absolute bottom-4 md:bottom-6 left-1/2 transform -translate-x-1/2 z-30 w-full max-w-2xl px-4 flex gap-3 md:gap-4">
-              <button 
-                onClick={() => setGameState('PLAYER_SELECT')}
-                className="kawaii-button kawaii-button-purple flex-1 py-2 md:py-3 text-lg md:text-xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-2 md:gap-3 drop-shadow-xl"
-              >
-                BACK
-              </button>
-              <button 
-                onClick={() => {
-                  playStart();
-                  gameRef.current?.setGameMode(selectedModeId);
-                  gameRef.current?.startGame();
-                }}
-                className="kawaii-button kawaii-button-pink flex-1 py-2 md:py-3 text-lg md:text-xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-2 md:gap-3 drop-shadow-xl"
-              >
-                <Play className="w-5 h-5 md:w-6 md:h-6 fill-current" />
-                START MISSION
-              </button>
-            </div>
           </div>
         )}
 
@@ -283,16 +352,17 @@ export default function App() {
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1025]/95 z-30 rounded-xl p-4 md:p-8 overflow-y-auto no-scrollbar">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 kawaii-text text-pastel-pink">CHOOSE YOUR FIGHTER</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-2xl">
-              {KAOMOJI_ROSTER.map(char => (
+              {KAOMOJI_ROSTER.map((char, index) => (
                 <button
                   key={char.id}
                   onClick={() => {
                     setSelectedChar(char);
                     gameRef.current?.setPlayerFaces(char.normal, char.shoot);
+                    setGameState('MODE_SELECT');
                   }}
                   className={`capsule-pod relative p-4 rounded-3xl flex flex-col items-center gap-2 ${
                     selectedChar.id === char.id ? 'selected' : ''
-                  }`}
+                  } ${selectedIndex === index ? 'menu-focused' : ''}`}
                 >
                   {selectedChar.id === char.id && (
                     <div className="orbiting-hearts">
@@ -304,20 +374,6 @@ export default function App() {
                   <div className="text-pastel-blue text-base font-bold uppercase tracking-widest">{char.name}</div>
                 </button>
               ))}
-            </div>
-            <div className="flex gap-4 mt-6 w-full max-w-md">
-              <button 
-                onClick={() => gameRef.current?.goToMenu()}
-                className="kawaii-button kawaii-button-purple flex-1 py-3 text-2xl text-white border-2 border-white/50 rounded-full font-bold"
-              >
-                BACK
-              </button>
-              <button 
-                onClick={() => setGameState('MODE_SELECT')}
-                className="kawaii-button kawaii-button-pink flex-1 py-3 text-2xl text-white border-2 border-white/50 rounded-full font-bold"
-              >
-                NEXT
-              </button>
             </div>
           </div>
         )}
@@ -350,7 +406,7 @@ export default function App() {
             </div>
             <button 
               onClick={() => gameRef.current?.goToMenu()}
-              className="kawaii-button kawaii-button-purple px-12 py-4 text-2xl text-white border-2 border-white/50 rounded-full font-bold"
+              className={`kawaii-button kawaii-button-purple px-12 py-4 text-2xl text-white border-2 border-white/50 rounded-full font-bold ${selectedIndex === 0 ? 'menu-focused' : ''}`}
             >
               MAIN MENU
             </button>
@@ -366,7 +422,7 @@ export default function App() {
             <div className="flex flex-col gap-4 w-full max-w-sm">
               <button 
                 onClick={() => gameRef.current?.togglePause()}
-                className="kawaii-button kawaii-button-pink w-full py-4 text-2xl text-white border-2 border-white/50 uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3"
+                className={`kawaii-button kawaii-button-pink w-full py-4 text-2xl text-white border-2 border-white/50 uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3 ${selectedIndex === 0 ? 'menu-focused' : ''}`}
               >
                 <Play className="w-6 h-6 fill-current" />
                 RESUME
@@ -375,7 +431,7 @@ export default function App() {
                 onClick={() => {
                   gameRef.current?.goToMenu();
                 }}
-                className="kawaii-button kawaii-button-purple w-full py-4 text-2xl text-white border-2 border-white/50 uppercase tracking-widest rounded-full font-bold"
+                className={`kawaii-button kawaii-button-purple w-full py-4 text-2xl text-white border-2 border-white/50 uppercase tracking-widest rounded-full font-bold ${selectedIndex === 1 ? 'menu-focused' : ''}`}
               >
                 MAIN MENU
               </button>
@@ -396,17 +452,19 @@ export default function App() {
                 <h3 className="text-2xl font-bold text-yellow-400 text-center">NEW HIGH SCORE!</h3>
                 <div className="flex flex-col sm:flex-row gap-2 w-full max-w-xs">
                   <input
+                    ref={nameInputRef}
                     type="text"
                     maxLength={10}
                     value={playerName}
+                    onFocus={() => setSelectedIndex(0)}
                     onChange={(e) => setPlayerName(e.target.value.toUpperCase())}
                     placeholder="ENTER NAME"
-                    className="bg-[#1a1025] border-2 border-pastel-pink rounded-xl px-4 py-3 text-white font-bold text-lg sm:text-xl text-center outline-none focus:border-pastel-blue uppercase w-full"
+                    className={`bg-[#1a1025] border-2 border-pastel-pink rounded-xl px-4 py-3 text-white font-bold text-lg sm:text-xl text-center outline-none focus:border-pastel-blue uppercase w-full ${selectedIndex === 0 ? 'menu-focused' : ''}`}
                   />
                   <button
                     onClick={submitHighScore}
                     disabled={!playerName.trim()}
-                    className="kawaii-button kawaii-button-pink px-6 py-3 sm:py-0 font-bold rounded-xl disabled:opacity-50 w-full sm:w-auto"
+                    className={`kawaii-button kawaii-button-pink px-6 py-3 sm:py-0 font-bold rounded-xl disabled:opacity-50 w-full sm:w-auto ${selectedIndex === 1 ? 'menu-focused' : ''}`}
                   >
                     SAVE
                   </button>
@@ -421,14 +479,14 @@ export default function App() {
             <div className="flex flex-col gap-4 w-full max-w-sm">
               <button 
                 onClick={handleStart}
-                className="kawaii-button kawaii-button-pink w-full py-4 text-2xl text-white border-2 border-white/50 uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3"
+                className={`kawaii-button kawaii-button-pink w-full py-4 text-2xl text-white border-2 border-white/50 uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3 ${selectedIndex === (isHighScore && !scoreSubmitted ? 2 : 0) ? 'menu-focused' : ''}`}
               >
                 <Play className="w-6 h-6 fill-current" />
                 PLAY AGAIN
               </button>
               <button 
                 onClick={() => gameRef.current?.goToMenu()}
-                className="kawaii-button kawaii-button-purple w-full py-4 text-2xl text-white border-2 border-white/50 uppercase tracking-widest rounded-full font-bold"
+                className={`kawaii-button kawaii-button-purple w-full py-4 text-2xl text-white border-2 border-white/50 uppercase tracking-widest rounded-full font-bold ${selectedIndex === (isHighScore && !scoreSubmitted ? 3 : 1) ? 'menu-focused' : ''}`}
               >
                 MAIN MENU
               </button>
@@ -449,17 +507,19 @@ export default function App() {
                 <h3 className="text-2xl font-bold text-yellow-400 text-center">NEW HIGH SCORE!</h3>
                 <div className="flex flex-col sm:flex-row gap-2 w-full max-w-xs">
                   <input
+                    ref={nameInputRef}
                     type="text"
                     maxLength={10}
                     value={playerName}
+                    onFocus={() => setSelectedIndex(0)}
                     onChange={(e) => setPlayerName(e.target.value.toUpperCase())}
                     placeholder="ENTER NAME"
-                    className="bg-[#1a1025] border-2 border-pastel-pink rounded-xl px-4 py-3 text-white font-bold text-lg sm:text-xl text-center outline-none focus:border-pastel-blue uppercase w-full"
+                    className={`bg-[#1a1025] border-2 border-pastel-pink rounded-xl px-4 py-3 text-white font-bold text-lg sm:text-xl text-center outline-none focus:border-pastel-blue uppercase w-full ${selectedIndex === 0 ? 'menu-focused' : ''}`}
                   />
                   <button
                     onClick={submitHighScore}
                     disabled={!playerName.trim()}
-                    className="kawaii-button kawaii-button-pink px-6 py-3 sm:py-0 font-bold rounded-xl disabled:opacity-50 w-full sm:w-auto"
+                    className={`kawaii-button kawaii-button-pink px-6 py-3 sm:py-0 font-bold rounded-xl disabled:opacity-50 w-full sm:w-auto ${selectedIndex === 1 ? 'menu-focused' : ''}`}
                   >
                     SAVE
                   </button>
@@ -474,7 +534,7 @@ export default function App() {
             <div className="flex flex-col gap-4 w-full max-w-sm">
               <button 
                 onClick={handleStart}
-                className="kawaii-button kawaii-button-pink w-full py-4 text-2xl text-white border-2 border-white/50 uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3"
+                className={`kawaii-button kawaii-button-pink w-full py-4 text-2xl text-white border-2 border-white/50 uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3 ${selectedIndex === (isHighScore && !scoreSubmitted ? 2 : 0) ? 'menu-focused' : ''}`}
               >
                 <Heart className="heart-icon w-8 h-8 fill-current" />
                 TRY AGAIN
@@ -482,7 +542,7 @@ export default function App() {
               </button>
               <button 
                 onClick={() => gameRef.current?.goToMenu()}
-                className="kawaii-button kawaii-button-purple w-full py-4 text-2xl text-white border-2 border-white/50 uppercase tracking-widest rounded-full font-bold"
+                className={`kawaii-button kawaii-button-purple w-full py-4 text-2xl text-white border-2 border-white/50 uppercase tracking-widest rounded-full font-bold ${selectedIndex === (isHighScore && !scoreSubmitted ? 3 : 1) ? 'menu-focused' : ''}`}
               >
                 MAIN MENU
               </button>
