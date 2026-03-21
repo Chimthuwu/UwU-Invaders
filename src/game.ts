@@ -50,7 +50,7 @@ interface Ring {
 }
 
 interface Alien extends Entity {
-  type: 'classic' | 'uwu' | 'owo' | 'kitty' | 'neko' | 'cluster' | 'ghost' | 'boss';
+  type: 'classic' | 'retrowo' | 'uwu' | 'owo' | 'kitty' | 'neko' | 'cluster' | 'ghost' | 'boss';
   hp: number;
   maxHp: number;
   state: string;
@@ -76,7 +76,7 @@ export class CyberInvaders {
   level: number = 1;
   wave: number = 1;
   bossActive: boolean = false;
-  gameMode: 'RETRO' | 'SURVIVAL' | 'KAWAII' = 'KAWAII';
+  gameMode: 'CLASSIC' | 'RETROWO' | 'SURVIVAL' | 'KAWAII' = 'KAWAII';
   
   player: Entity = { x: 400, y: 550, width: 60, height: 24, color: '#00ffff' };
   playerFaceNormal: string = '(*´ω｀)';
@@ -195,7 +195,7 @@ export class CyberInvaders {
     this.initLevel();
   }
 
-  setGameMode(mode: 'RETRO' | 'SURVIVAL' | 'KAWAII') {
+  setGameMode(mode: 'CLASSIC' | 'RETROWO' | 'SURVIVAL' | 'KAWAII') {
     this.gameMode = mode;
   }
 
@@ -222,7 +222,23 @@ export class CyberInvaders {
     
     const waveMultiplier = 1 + (this.wave - 1) * 0.5;
 
-    if (this.gameMode === 'RETRO') {
+    if (this.gameMode === 'CLASSIC') {
+      this.alienMoveInterval = Math.max(50, 800 - (this.level * 100));
+      const cols = Math.min(12, 6 + Math.floor(this.level / 2));
+      const rows = Math.min(6, 3 + Math.floor(this.level / 3));
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          this.aliens.push({
+            x: 80 + col * 50, y: 50 + row * 40, width: 40, height: 24,
+            color: row % 2 === 0 ? '#7be8ff' : '#fff6e9', type: 'classic', hp: 1, maxHp: 1, state: 'idle', timer: 0,
+            startX: 80 + col * 50, startY: 50 + row * 40, vx: 0, vy: 0, face: '', phase: row % 2
+          });
+        }
+      }
+      return;
+    }
+
+    if (this.gameMode === 'RETROWO') {
       this.alienMoveInterval = Math.max(50, 800 - (this.level * 100));
       const cols = Math.min(12, 6 + Math.floor(this.level / 2));
       const rows = Math.min(6, 3 + Math.floor(this.level / 3));
@@ -230,7 +246,7 @@ export class CyberInvaders {
         for (let col = 0; col < cols; col++) {
           this.aliens.push({
             x: 80 + col * 60, y: 50 + row * 50, width: 50, height: 30,
-            color: row % 2 === 0 ? '#ff8fd8' : '#ffb3f0', type: 'classic', hp: 1, maxHp: 1, state: 'idle', timer: 0,
+            color: row % 2 === 0 ? '#39ff14' : '#ccff00', type: 'retrowo', hp: 1, maxHp: 1, state: 'idle', timer: 0,
             startX: 80 + col * 60, startY: 50 + row * 50, vx: 0, vy: 0, face: 'UwU', phase: row % 2
           });
         }
@@ -240,7 +256,7 @@ export class CyberInvaders {
 
     if (this.gameMode === 'SURVIVAL') {
       this.alienMoveInterval = Math.max(50, 800 - (this.wave * 50));
-      const types = ['classic', 'uwu', 'owo', 'kitty', 'neko', 'cluster', 'ghost'];
+      const types = ['classic', 'retrowo', 'uwu', 'owo', 'kitty', 'neko', 'cluster', 'ghost'];
       const type = types[(this.wave - 1) % types.length];
       const count = 10 + this.wave * 2;
       const hp = Math.ceil(waveMultiplier);
@@ -267,7 +283,12 @@ export class CyberInvaders {
         let height = 30;
         
         if (type === 'classic') {
-          color = row % 2 === 0 ? '#ff8fd8' : '#ffb3f0';
+          color = row % 2 === 0 ? '#7be8ff' : '#fff6e9';
+          face = '';
+          width = 40;
+          height = 24;
+        } else if (type === 'retrowo') {
+          color = row % 2 === 0 ? '#39ff14' : '#ccff00';
           face = 'UwU';
           width = 50;
           height = 30;
@@ -588,10 +609,10 @@ export class CyberInvaders {
     // Classic Alien Movement
     this.alienMoveTimer += dt;
     
-    // Speed up classic aliens as they are destroyed in RETRO mode
-    if (this.gameMode === 'RETRO') {
-      const classicCount = this.aliens.filter(a => a.type === 'classic').length;
-      const totalAliens = 55; // 5 rows * 11 cols
+    // Speed up classic/retrowo aliens as they are destroyed
+    if (this.gameMode === 'CLASSIC' || this.gameMode === 'RETROWO') {
+      const classicCount = this.aliens.filter(a => a.type === 'classic' || a.type === 'retrowo').length;
+      const totalAliens = Math.min(12, 6 + Math.floor(this.level / 2)) * Math.min(6, 3 + Math.floor(this.level / 3));
       const remainingRatio = Math.max(0.05, classicCount / totalAliens);
       this.alienMoveInterval = Math.max(50, 800 * remainingRatio);
     }
@@ -603,7 +624,7 @@ export class CyberInvaders {
       
       let hitEdge = false;
       for (const a of this.aliens) {
-        if (a.type === 'classic') {
+        if (a.type === 'classic' || a.type === 'retrowo') {
           if ((this.alienDirection === 1 && a.x + a.width > this.width - 20) ||
               (this.alienDirection === -1 && a.x < 20)) {
             hitEdge = true;
@@ -615,7 +636,7 @@ export class CyberInvaders {
       if (hitEdge) {
         this.alienDirection *= -1;
         for (const a of this.aliens) {
-          if (a.type === 'classic') {
+          if (a.type === 'classic' || a.type === 'retrowo') {
             a.y += 20;
             if (a.y + a.height > this.player.y) {
               this.state = 'GAMEOVER';
@@ -626,14 +647,14 @@ export class CyberInvaders {
         }
       } else {
         for (const a of this.aliens) {
-          if (a.type === 'classic') {
+          if (a.type === 'classic' || a.type === 'retrowo') {
             a.x += 15 * this.alienDirection;
           }
         }
       }
       
       // Classic Alien shooting
-      const classicAliens = this.aliens.filter(a => a.type === 'classic');
+      const classicAliens = this.aliens.filter(a => a.type === 'classic' || a.type === 'retrowo');
       const difficultyScale = this.gameMode === 'SURVIVAL' ? this.wave : this.level;
       if (classicAliens.length > 0 && Math.random() < 0.4 + (difficultyScale * 0.1)) {
         const randomAlien = classicAliens[Math.floor(Math.random() * classicAliens.length)];
@@ -649,6 +670,8 @@ export class CyberInvaders {
       a.timer += dt;
       
       if (a.type === 'classic') {
+        a.face = this.alienStep % 2 === 0 ? (a.phase === 0 ? 'UwU' : '>w<') : (a.phase === 0 ? 'OwO' : '^w^');
+      } else if (a.type === 'retrowo') {
         a.face = this.alienStep % 2 === a.phase ? 'UwU' : '>w<';
       } else if (a.type === 'uwu') {
         a.x = a.startX + Math.sin(this.time * 0.002 * waveMultiplier + a.startY) * 50;
@@ -735,7 +758,7 @@ export class CyberInvaders {
 
     // Level complete
     if (this.aliens.length === 0 && this.state === 'PLAYING') {
-      if (this.gameMode === 'RETRO') {
+      if (this.gameMode === 'CLASSIC' || this.gameMode === 'RETROWO') {
         this.level++;
         this.onLevelChange?.(this.level);
         this.spawnWave();
@@ -834,7 +857,7 @@ export class CyberInvaders {
     }
     this.ctx.globalAlpha = 1;
 
-    if (this.gameMode !== 'RETRO') {
+    if (this.gameMode !== 'RETROWO') {
       this.drawGrid();
     }
 
@@ -875,7 +898,7 @@ export class CyberInvaders {
       this.ctx.shadowBlur = 10;
       this.ctx.shadowColor = a.color;
       
-      const bounceY = a.type === 'classic' ? 0 : Math.sin(this.time * 0.008 + a.x) * 4;
+      const bounceY = a.type === 'retrowo' ? 0 : Math.sin(this.time * 0.008 + a.x) * 4;
       
       if (a.type === 'boss') {
         this.ctx.font = '48px "VT323", monospace';
