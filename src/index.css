@@ -44,20 +44,6 @@ body {
   animation: float-pulse-anim 3s infinite ease-in-out;
 }
 
-.title-uwu {
-  background: linear-gradient(to bottom, #ffb3f0 0%, #c59cff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0px 6px 0px rgba(0,0,0,0.6)) drop-shadow(0px 0px 20px rgba(198, 168, 255, 0.6));
-}
-
-.title-invaders {
-  background: linear-gradient(to bottom, #ffb3f0 0%, #7be8ff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0px 6px 0px rgba(0,0,0,0.6)) drop-shadow(0px 0px 20px rgba(123, 232, 255, 0.6));
-}
-
 @keyframes neon-pulse {
   0%, 100% {
     text-shadow: 0 0 10px var(--pastel-pink), 0 0 20px var(--pastel-pink), 0 0 30px var(--pastel-pink), 0 0 40px var(--pastel-pink), 2px 2px var(--pastel-purple), -2px -2px var(--pastel-blue);
@@ -246,4 +232,15 @@ body {
 canvas {
   image-rendering: pixelated;
   filter: drop-shadow(0 0 4px rgba(255, 156, 230, 0.4));
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
