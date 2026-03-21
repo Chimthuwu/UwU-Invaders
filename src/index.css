@@ -244,3 +244,18 @@ canvas {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+/* Keyboard Navigation Focus Style */
+.menu-focused {
+  transform: translateY(-4px) scale(1.05) !important;
+  outline: 4px solid white !important;
+  outline-offset: 4px !important;
+  box-shadow: 0 0 30px white, 0 0 60px var(--pastel-pink) !important;
+  z-index: 30 !important;
+  animation: focus-pulse 1.5s infinite ease-in-out !important;
+}
+
+@keyframes focus-pulse {
+  0%, 100% { outline-color: white; outline-offset: 4px; }
+  50% { outline-color: var(--pastel-blue); outline-offset: 8px; }
+}
