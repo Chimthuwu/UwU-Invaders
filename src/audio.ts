@@ -1,13 +1,61 @@
 export const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
 
+let musicAudio: HTMLAudioElement | null = null;
+let isMuted = false;
+let currentTrack: string | null = null;
+
+const MUSIC_FILES = [
+  '/audio/In this safe - serge rybak.mp3',
+  '/audio/Lil lamplight.mp3',
+  '/audio/Melancholics Anonymous - S3rge Rybak.mp3',
+  '/audio/Memowave.mp3'
+];
+
 export const initAudio = () => {
   if (audioCtx.state === 'suspended') {
     audioCtx.resume();
   }
 };
 
+export const toggleMute = () => {
+  isMuted = !isMuted;
+  if (musicAudio) {
+    musicAudio.muted = isMuted;
+  }
+  return isMuted;
+};
+
+export const getIsMuted = () => isMuted;
+
+export const playBackgroundMusic = (isGameplay: boolean) => {
+  if (!musicAudio) {
+    musicAudio = new Audio();
+    musicAudio.loop = true;
+    musicAudio.volume = 0.3;
+    musicAudio.muted = isMuted;
+  }
+
+  // Choose a random track different from the current one
+  let nextTrack: string;
+  do {
+    nextTrack = MUSIC_FILES[Math.floor(Math.random() * MUSIC_FILES.length)];
+  } while (nextTrack === currentTrack && MUSIC_FILES.length > 1);
+
+  currentTrack = nextTrack;
+  musicAudio.src = nextTrack;
+  
+  // Play music (handle browser autoplay restrictions)
+  musicAudio.play().catch(err => console.warn("Music autoplay blocked:", err));
+};
+
+export const stopBackgroundMusic = () => {
+  if (musicAudio) {
+    musicAudio.pause();
+  }
+};
+
 const playTone = (freq1: number, freq2: number, type: OscillatorType, duration: number, vol: number = 0.1) => {
-  if (audioCtx.state === 'suspended') return;
+  if (audioCtx.state === 'suspended' || isMuted) return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   
