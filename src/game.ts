@@ -30,6 +30,14 @@ interface Star {
   color: string;
 }
 
+interface Nebula {
+  x: number;
+  y: number;
+  radius: number;
+  color: string;
+  pulse: number;
+}
+
 interface Trail {
   x: number;
   y: number;
@@ -85,6 +93,7 @@ export class CyberInvaders {
   bullets: (Entity & { vy: number; isPlayer: boolean })[] = [];
   particles: Particle[] = [];
   stars: Star[] = [];
+  nebulae: Nebula[] = [];
   trails: Trail[] = [];
   rings: Ring[] = [];
   time: number = 0;
@@ -115,6 +124,54 @@ export class CyberInvaders {
     this.playerFaceShoot = shoot;
   }
 
+  initBackground() {
+    this.stars = [];
+    this.nebulae = [];
+    
+    const starCount = 100 + (this.level * 10);
+    const starColors = this.getStarColors();
+    
+    for (let i = 0; i < starCount; i++) {
+      this.stars.push({
+        x: Math.random() * this.width,
+        y: Math.random() * this.height,
+        size: Math.random() * 2 + 0.5,
+        speed: Math.random() * 0.5 + 0.1,
+        color: starColors[Math.floor(Math.random() * starColors.length)]
+      });
+    }
+
+    const nebulaCount = 3 + Math.floor(this.level / 2);
+    const nebulaColors = this.getNebulaColors();
+    for (let i = 0; i < nebulaCount; i++) {
+      this.nebulae.push({
+        x: Math.random() * this.width,
+        y: Math.random() * this.height,
+        radius: 100 + Math.random() * 200,
+        color: nebulaColors[Math.floor(Math.random() * nebulaColors.length)],
+        pulse: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  getStarColors() {
+    switch(this.gameMode) {
+      case 'RETROWO': return ['#39ff14', '#ccff00', '#ffffff'];
+      case 'SURVIVAL': return ['#ff0000', '#ff4400', '#ffffff'];
+      case 'CLASSIC': return ['#7be8ff', '#ffffff', '#fff6e9'];
+      default: return ['#ffb3f0', '#c59cff', '#7be8ff', '#ffffff'];
+    }
+  }
+
+  getNebulaColors() {
+    const levelHue = (this.level * 40) % 360;
+    switch(this.gameMode) {
+      case 'RETROWO': return [`hsla(100, 100%, 50%, 0.05)`, `hsla(80, 100%, 50%, 0.05)`];
+      case 'SURVIVAL': return [`hsla(0, 100%, 50%, 0.05)`, `hsla(20, 100%, 50%, 0.05)`];
+      default: return [`hsla(${levelHue}, 70%, 50%, 0.05)`, `hsla(${(levelHue + 60) % 360}, 70%, 50%, 0.05)`];
+    }
+  }
+
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
@@ -124,15 +181,7 @@ export class CyberInvaders {
     this.canvas.height = this.height;
     
     // Init stars
-    for (let i = 0; i < 100; i++) {
-      this.stars.push({
-        x: Math.random() * this.width,
-        y: Math.random() * this.height,
-        size: Math.random() * 2 + 0.5,
-        speed: Math.random() * 0.5 + 0.1,
-        color: Math.random() > 0.5 ? '#fff6e9' : '#c6a8ff'
-      });
-    }
+    this.initBackground();
     
     window.addEventListener('keydown', this.handleKeyDown);
     window.addEventListener('keyup', this.handleKeyUp);
@@ -192,11 +241,13 @@ export class CyberInvaders {
   setLevel(level: number) {
     this.level = level;
     this.onLevelChange?.(this.level);
+    this.initBackground();
     this.initLevel();
   }
 
   setGameMode(mode: 'CLASSIC' | 'RETROWO' | 'SURVIVAL' | 'KAWAII') {
     this.gameMode = mode;
+    this.initBackground();
   }
 
   initLevel() {
@@ -449,6 +500,15 @@ export class CyberInvaders {
       if (star.y > this.height) {
         star.y = 0;
         star.x = Math.random() * this.width;
+      }
+    }
+
+    // Update nebulae
+    for (const nebula of this.nebulae) {
+      nebula.y += 0.05 * (dt / 16);
+      if (nebula.y - nebula.radius > this.height) {
+        nebula.y = -nebula.radius;
+        nebula.x = Math.random() * this.width;
       }
     }
 
@@ -846,6 +906,23 @@ export class CyberInvaders {
     this.ctx.fillRect(0, 0, this.width, this.height);
 
     this.ctx.save();
+
+    // Draw Nebulae
+    for (const nebula of this.nebulae) {
+      const pulseScale = 0.8 + Math.sin(this.time * 0.001 + nebula.pulse) * 0.2;
+      const gradient = this.ctx.createRadialGradient(
+        nebula.x, nebula.y, 0,
+        nebula.x, nebula.y, nebula.radius * pulseScale
+      );
+      gradient.addColorStop(0, nebula.color);
+      gradient.addColorStop(1, 'transparent');
+      
+      this.ctx.fillStyle = gradient;
+      this.ctx.globalAlpha = 1;
+      this.ctx.beginPath();
+      this.ctx.arc(nebula.x, nebula.y, nebula.radius * pulseScale, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
 
     // Draw Stars
     for (const star of this.stars) {
