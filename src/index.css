@@ -40,9 +40,22 @@ body {
   animation: float-pulse-anim 3s infinite ease-in-out;
 }
 
-.uwu-title {
-  position: relative;
-  animation: neon-pulse 3s infinite alternate, glitch-shift 2.5s infinite steps(1), float-pulse-anim 3s infinite ease-in-out;
+.title-container {
+  animation: float-pulse-anim 3s infinite ease-in-out;
+}
+
+.title-uwu {
+  background: linear-gradient(to bottom, #ffb3f0 0%, #c59cff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0px 6px 0px rgba(0,0,0,0.6)) drop-shadow(0px 0px 20px rgba(198, 168, 255, 0.6));
+}
+
+.title-invaders {
+  background: linear-gradient(to bottom, #ffb3f0 0%, #7be8ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0px 6px 0px rgba(0,0,0,0.6)) drop-shadow(0px 0px 20px rgba(123, 232, 255, 0.6));
 }
 
 @keyframes neon-pulse {
@@ -70,23 +83,135 @@ body {
 
 /* Button Hover Animations */
 .kawaii-button {
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background-size: 200% auto;
+  border: none !important;
+}
+
+.kawaii-button::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    transparent 0px,
+    transparent 2px,
+    rgba(255, 255, 255, 0.2) 2px,
+    rgba(255, 255, 255, 0.2) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.kawaii-button > * {
+  position: relative;
+  z-index: 2;
+  text-shadow: 0px 2px 4px rgba(0,0,0,0.3);
+}
+
+.kawaii-button-pink {
+  background-image: linear-gradient(to bottom, #ffb3f0 0%, #ff8fd8 100%);
+  box-shadow: 
+    inset 0 4px 6px rgba(255, 255, 255, 0.8),
+    inset 0 -6px 8px rgba(0, 0, 0, 0.2),
+    0 0 20px rgba(255, 143, 216, 0.5),
+    0 8px 15px rgba(0, 0, 0, 0.4);
+}
+
+.kawaii-button-purple {
+  background-image: linear-gradient(to bottom, #d8c2ff 0%, #c6a8ff 100%);
+  box-shadow: 
+    inset 0 4px 6px rgba(255, 255, 255, 0.8),
+    inset 0 -6px 8px rgba(0, 0, 0, 0.2),
+    0 0 20px rgba(198, 168, 255, 0.5),
+    0 8px 15px rgba(0, 0, 0, 0.4);
 }
 
 .kawaii-button:hover {
-  transform: scale(1.08) rotate(-2deg);
+  transform: translateY(-4px) scale(1.02);
+  background-position: right center;
+}
+
+.kawaii-button-pink:hover {
+  box-shadow: 
+    inset 0 4px 6px rgba(255, 255, 255, 0.9),
+    inset 0 -6px 8px rgba(0, 0, 0, 0.2),
+    0 0 30px rgba(255, 143, 216, 0.8),
+    0 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+.kawaii-button-purple:hover {
+  box-shadow: 
+    inset 0 4px 6px rgba(255, 255, 255, 0.9),
+    inset 0 -6px 8px rgba(0, 0, 0, 0.2),
+    0 0 30px rgba(198, 168, 255, 0.8),
+    0 10px 20px rgba(0, 0, 0, 0.5);
 }
 
 .kawaii-button:active {
-  transform: scale(0.95);
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 
+    inset 0 2px 4px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.4),
+    0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .kawaii-button:hover .star-icon {
-  animation: spin 2s linear infinite;
+  animation: wiggle 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes wiggle {
+  0% { transform: rotate(-10deg) scale(1.1); }
+  100% { transform: rotate(10deg) scale(1.1); }
 }
 
 .kawaii-button:hover .heart-icon {
   animation: heartbeat 1.2s infinite ease-in-out;
+}
+
+/* Capsule Pods */
+.capsule-pod {
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255,255,255,0.1);
+  box-shadow: inset 0 0 20px rgba(255,255,255,0.05), 0 8px 32px rgba(0,0,0,0.3);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.capsule-pod:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255,255,255,0.3);
+  box-shadow: inset 0 0 30px rgba(255,255,255,0.1), 0 12px 40px rgba(0,0,0,0.4);
+}
+
+.capsule-pod.selected {
+  border-color: var(--pastel-pink);
+  box-shadow: inset 0 0 40px rgba(255, 143, 216, 0.2), 0 0 30px rgba(255, 143, 216, 0.4);
+  transform: scale(1.05);
+}
+
+.orbiting-hearts {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  animation: spin 4s linear infinite;
+}
+
+.orbit-heart {
+  position: absolute;
+  animation: counter-spin 4s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes counter-spin {
+  100% { transform: rotate(-360deg); }
 }
 
 @keyframes heartbeat {
