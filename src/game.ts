@@ -229,9 +229,9 @@ export class CyberInvaders {
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
           this.aliens.push({
-            x: 80 + col * 50, y: 50 + row * 40, width: 40, height: 24,
-            color: row % 2 === 0 ? '#7be8ff' : '#fff6e9', type: 'classic', hp: 1, maxHp: 1, state: 'idle', timer: 0,
-            startX: 80 + col * 50, startY: 50 + row * 40, vx: 0, vy: 0, face: '', phase: row % 2
+            x: 80 + col * 60, y: 50 + row * 50, width: 50, height: 30,
+            color: row % 2 === 0 ? '#ff8fd8' : '#ffb3f0', type: 'classic', hp: 1, maxHp: 1, state: 'idle', timer: 0,
+            startX: 80 + col * 60, startY: 50 + row * 50, vx: 0, vy: 0, face: 'UwU', phase: row % 2
           });
         }
       }
@@ -254,11 +254,46 @@ export class CyberInvaders {
         return;
       }
 
+      const cols = Math.min(12, 6 + Math.floor(this.wave / 2));
+      const rows = Math.ceil(count / cols);
+
       for (let i = 0; i < count; i++) {
+        const row = Math.floor(i / cols);
+        const col = i % cols;
+        
+        let color = '#ffb3f0';
+        let face = 'UwU';
+        let width = 40;
+        let height = 30;
+        
+        if (type === 'classic') {
+          color = row % 2 === 0 ? '#ff8fd8' : '#ffb3f0';
+          face = 'UwU';
+          width = 50;
+          height = 30;
+        } else if (type === 'owo') {
+          color = '#c59cff';
+          face = 'OwO';
+        } else if (type === 'kitty') {
+          color = '#7be8ff';
+          face = '=w=';
+        } else if (type === 'neko') {
+          color = '#ffb3f0';
+          face = '^._.^';
+        } else if (type === 'cluster') {
+          color = '#c59cff';
+          face = '(づ｡◕‿‿◕｡)づ';
+          width = 80;
+          height = 50;
+        } else if (type === 'ghost') {
+          color = '#7be8ff';
+          face = '👻';
+        }
+
         this.aliens.push({
-          x: 100 + (i % 8) * 70, y: 50 + Math.floor(i / 8) * 50, width: 40, height: 30,
-          color: '#ffb3f0', type: type as any, hp: hp, maxHp: hp, state: 'idle', timer: i * 100,
-          startX: 100 + (i % 8) * 70, startY: 50 + Math.floor(i / 8) * 50, vx: 0, vy: 0, face: 'UwU', phase: i % 2
+          x: 80 + col * (width + 10), y: 50 + row * (height + 10), width, height,
+          color, type: type as any, hp: hp, maxHp: hp, state: 'idle', timer: i * 100,
+          startX: 80 + col * (width + 10), startY: 50 + row * (height + 10), vx: 0, vy: 0, face, phase: row % 2
         });
       }
       return;
@@ -552,6 +587,15 @@ export class CyberInvaders {
 
     // Classic Alien Movement
     this.alienMoveTimer += dt;
+    
+    // Speed up classic aliens as they are destroyed in RETRO mode
+    if (this.gameMode === 'RETRO') {
+      const classicCount = this.aliens.filter(a => a.type === 'classic').length;
+      const totalAliens = 55; // 5 rows * 11 cols
+      const remainingRatio = Math.max(0.05, classicCount / totalAliens);
+      this.alienMoveInterval = Math.max(50, 800 * remainingRatio);
+    }
+
     if (this.alienMoveTimer > this.alienMoveInterval) {
       this.alienMoveTimer = 0;
       this.alienStep++;
@@ -605,7 +649,7 @@ export class CyberInvaders {
       a.timer += dt;
       
       if (a.type === 'classic') {
-        a.face = this.alienStep % 2 === 0 ? (a.phase === 0 ? 'UwU' : '>w<') : (a.phase === 0 ? 'OwO' : '^w^');
+        a.face = this.alienStep % 2 === a.phase ? 'UwU' : '>w<';
       } else if (a.type === 'uwu') {
         a.x = a.startX + Math.sin(this.time * 0.002 * waveMultiplier + a.startY) * 50;
         a.y = a.startY + Math.sin(this.time * 0.003 * waveMultiplier + a.startX) * 10;
@@ -790,7 +834,9 @@ export class CyberInvaders {
     }
     this.ctx.globalAlpha = 1;
 
-    this.drawGrid();
+    if (this.gameMode !== 'RETRO') {
+      this.drawGrid();
+    }
 
     // Screen shake
     if (this.screenShake > 0) {
@@ -829,7 +875,16 @@ export class CyberInvaders {
       this.ctx.shadowBlur = 10;
       this.ctx.shadowColor = a.color;
       
-      const bounceY = Math.sin(this.time * 0.008 + a.x) * 4;
+      const bounceY = a.type === 'classic' ? 0 : Math.sin(this.time * 0.008 + a.x) * 4;
+      
+      if (a.type === 'boss') {
+        this.ctx.font = '48px "VT323", monospace';
+      } else if (a.type === 'cluster') {
+        this.ctx.font = '36px "VT323", monospace';
+      } else {
+        this.ctx.font = '28px "VT323", monospace';
+      }
+      
       this.ctx.fillText(a.face, a.x + a.width / 2, a.y + a.height / 2 + bounceY);
     }
 
