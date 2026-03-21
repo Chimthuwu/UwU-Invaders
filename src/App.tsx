@@ -196,12 +196,12 @@ export default function App() {
 
         {/* Mode Select Overlay */}
         {gameState === 'MODE_SELECT' && (
-          <div className="absolute inset-0 bg-[#1a1025]/95 z-20 rounded-xl overflow-hidden flex flex-col items-center justify-start p-8">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 kawaii-text text-pastel-pink">GAME SETUP</h2>
-            <p className="text-pastel-blue mb-8 tracking-widest uppercase text-sm">Select your game style & difficulty</p>
+          <div className="absolute inset-0 bg-[#1a1025]/95 z-20 rounded-xl overflow-hidden flex flex-col items-center justify-start p-6">
+            <h2 className="text-3xl md:text-4xl font-bold mb-2 kawaii-text text-pastel-pink">GAME SETUP</h2>
+            <p className="text-pastel-blue mb-6 tracking-widest uppercase text-xs">Select your game style & difficulty</p>
             
-            <div className="w-full max-w-4xl flex-1 overflow-y-auto pr-4 custom-scrollbar">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-24">
+            <div className="w-full max-w-4xl flex-1 flex flex-col justify-center">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-20">
                 {GAME_MODES.map((mode) => {
                   const isSelected = selectedModeId === mode.id;
                   
@@ -214,7 +214,7 @@ export default function App() {
                     <div 
                       key={mode.id}
                       onClick={() => setSelectedModeId(mode.id as 'RETRO' | 'SURVIVAL' | 'KAWAII')}
-                      className={`relative p-6 rounded-2xl cursor-pointer transition-all duration-300 border-2 flex flex-col gap-3
+                      className={`relative p-4 rounded-2xl cursor-pointer transition-all duration-300 border-2 flex flex-col gap-2
                         ${isSelected 
                           ? 'bg-[#2a1b3d] border-pastel-pink shadow-[0_0_20px_rgba(255,179,240,0.4)] transform scale-105 z-10' 
                           : 'bg-[#1a1025] border-slate-700 hover:border-pastel-purple hover:bg-[#201530]'
@@ -222,14 +222,14 @@ export default function App() {
                       `}
                     >
                       <div className="flex justify-between items-start">
-                        <h3 className={`text-2xl font-bold ${isSelected ? 'text-white' : 'text-slate-300'}`}>
+                        <h3 className={`text-xl font-bold ${isSelected ? 'text-white' : 'text-slate-300'}`}>
                           {mode.name}
                         </h3>
-                        <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-black/30 border border-white/10 ${difficultyColor}`}>
+                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-black/30 border border-white/10 ${difficultyColor}`}>
                           {mode.difficulty}
                         </span>
                       </div>
-                      <p className="text-base text-slate-400 mt-2 leading-relaxed">{mode.desc}</p>
+                      <p className="text-sm text-slate-400 mt-1 leading-snug">{mode.desc}</p>
                       
                       {isSelected && (
                         <div className="absolute -inset-1 border border-pastel-pink rounded-2xl animate-ping opacity-20 pointer-events-none"></div>
@@ -244,7 +244,7 @@ export default function App() {
             <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-30 w-full max-w-2xl px-4 flex gap-4">
               <button 
                 onClick={() => setGameState('PLAYER_SELECT')}
-                className="kawaii-button kawaii-button-purple flex-1 py-4 text-2xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3 drop-shadow-xl"
+                className="kawaii-button kawaii-button-purple flex-1 py-3 text-xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3 drop-shadow-xl"
               >
                 BACK
               </button>
@@ -254,7 +254,7 @@ export default function App() {
                   gameRef.current?.setGameMode(selectedModeId);
                   gameRef.current?.startGame();
                 }}
-                className="kawaii-button kawaii-button-pink flex-1 py-4 text-2xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3 drop-shadow-xl"
+                className="kawaii-button kawaii-button-pink flex-1 py-3 text-xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3 drop-shadow-xl"
               >
                 <Play className="w-6 h-6 fill-current" />
                 START MISSION
