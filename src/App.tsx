@@ -197,12 +197,12 @@ export default function App() {
 
         {/* Mode Select Overlay */}
         {gameState === 'MODE_SELECT' && (
-          <div className="absolute inset-0 bg-[#1a1025]/95 z-20 rounded-xl overflow-hidden flex flex-col items-center justify-start p-6">
-            <h2 className="text-3xl md:text-4xl font-bold mb-2 kawaii-text text-pastel-pink">GAME SETUP</h2>
-            <p className="text-pastel-blue mb-6 tracking-widest uppercase text-xs">Select your game style & difficulty</p>
+          <div className="absolute inset-0 bg-[#1a1025]/95 z-20 rounded-xl overflow-hidden flex flex-col items-center justify-start p-4 md:p-6">
+            <h2 className="text-2xl md:text-3xl font-bold mb-1 kawaii-text text-pastel-pink shrink-0">GAME SETUP</h2>
+            <p className="text-pastel-blue mb-4 tracking-widest uppercase text-[10px] md:text-xs shrink-0">Select your game style & difficulty</p>
             
-            <div className="w-full max-w-4xl flex-1 flex flex-col justify-center">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-20">
+            <div className="w-full max-w-4xl flex-1 flex flex-col justify-center px-2 pb-16 md:pb-20">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                 {GAME_MODES.map((mode) => {
                   const isSelected = selectedModeId === mode.id;
                   
@@ -214,23 +214,23 @@ export default function App() {
                   return (
                     <div 
                       key={mode.id}
-                      onClick={() => setSelectedModeId(mode.id as 'RETRO' | 'SURVIVAL' | 'KAWAII')}
-                      className={`relative p-4 rounded-2xl cursor-pointer transition-all duration-300 border-2 flex flex-col gap-2
+                      onClick={() => setSelectedModeId(mode.id as 'CLASSIC' | 'RETROWO' | 'SURVIVAL' | 'KAWAII')}
+                      className={`relative p-3 md:p-4 rounded-xl md:rounded-2xl cursor-pointer transition-all duration-300 border-2 flex flex-col gap-1 md:gap-2
                         ${isSelected 
-                          ? 'bg-[#2a1b3d] border-pastel-pink shadow-[0_0_20px_rgba(255,179,240,0.4)] transform scale-105 z-10' 
+                          ? 'bg-[#2a1b3d] border-pastel-pink shadow-[0_0_15px_rgba(255,179,240,0.4)] transform scale-[1.02] z-10' 
                           : 'bg-[#1a1025] border-slate-700 hover:border-pastel-purple hover:bg-[#201530]'
                         }
                       `}
                     >
                       <div className="flex justify-between items-start">
-                        <h3 className={`text-xl font-bold ${isSelected ? 'text-white' : 'text-slate-300'}`}>
+                        <h3 className={`text-lg md:text-xl font-bold ${isSelected ? 'text-white' : 'text-slate-300'}`}>
                           {mode.name}
                         </h3>
-                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-black/30 border border-white/10 ${difficultyColor}`}>
+                        <span className={`text-[9px] md:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 md:py-1 rounded-md bg-black/30 border border-white/10 ${difficultyColor}`}>
                           {mode.difficulty}
                         </span>
                       </div>
-                      <p className="text-sm text-slate-400 mt-1 leading-snug">{mode.desc}</p>
+                      <p className="text-xs md:text-sm text-slate-400 mt-1 leading-snug">{mode.desc}</p>
                       
                       {isSelected && (
                         <div className="absolute -inset-1 border border-pastel-pink rounded-2xl animate-ping opacity-20 pointer-events-none"></div>
@@ -242,10 +242,10 @@ export default function App() {
             </div>
 
             {/* Play Button */}
-            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-30 w-full max-w-2xl px-4 flex gap-4">
+            <div className="absolute bottom-4 md:bottom-6 left-1/2 transform -translate-x-1/2 z-30 w-full max-w-2xl px-4 flex gap-3 md:gap-4">
               <button 
                 onClick={() => setGameState('PLAYER_SELECT')}
-                className="kawaii-button kawaii-button-purple flex-1 py-3 text-xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3 drop-shadow-xl"
+                className="kawaii-button kawaii-button-purple flex-1 py-2 md:py-3 text-lg md:text-xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-2 md:gap-3 drop-shadow-xl"
               >
                 BACK
               </button>
@@ -255,9 +255,9 @@ export default function App() {
                   gameRef.current?.setGameMode(selectedModeId);
                   gameRef.current?.startGame();
                 }}
-                className="kawaii-button kawaii-button-pink flex-1 py-3 text-xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3 drop-shadow-xl"
+                className="kawaii-button kawaii-button-pink flex-1 py-2 md:py-3 text-lg md:text-xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-2 md:gap-3 drop-shadow-xl"
               >
-                <Play className="w-6 h-6 fill-current" />
+                <Play className="w-5 h-5 md:w-6 md:h-6 fill-current" />
                 START MISSION
               </button>
             </div>
