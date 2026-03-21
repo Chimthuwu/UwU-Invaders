@@ -125,55 +125,68 @@ export default function App() {
   };
 
   return (
-    <div className="relative w-screen h-screen bg-[#1a1025] flex items-center justify-center overflow-hidden">
+    <div className="relative w-screen h-screen bg-[#1a1025] flex items-center justify-center overflow-hidden p-2 md:p-4">
       {/* CRT Overlay */}
       <div className="crt-overlay"></div>
 
       {/* Game Container */}
-      <div className="relative border-2 border-pastel-purple p-1 rounded-2xl bg-[#1a1025]">
+      <div 
+        className="relative border-2 border-pastel-purple p-1 rounded-2xl bg-[#1a1025] flex flex-col w-full h-full max-w-4xl max-h-[800px]"
+      >
         
-        {/* HUD */}
-        {gameState !== 'START' && (
-          <div className="absolute top-4 left-4 right-4 flex justify-between text-xl z-10 pointer-events-none">
-            <div className="text-pastel-pink">SCORE: {score.toString().padStart(6, '0')}</div>
-            <div className="text-pastel-blue">
-              {selectedModeId === 'SURVIVAL' ? `WAVE: ${wave}` : `LEVEL: ${level}`}
-            </div>
-            <div className="text-pastel-purple">LIVES: {'❤'.repeat(lives)}</div>
-          </div>
-        )}
+        {/* Game Area (Canvas + HUD) */}
+        <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden">
+          <div 
+            className="relative flex items-center justify-center"
+            style={{ 
+              width: '100%',
+              maxWidth: 'calc((100vh - 40px) * 4/3)',
+              maxHeight: '100%',
+              aspectRatio: '4/3'
+            }}
+          >
+            {/* HUD */}
+            {gameState !== 'START' && (
+              <div className="absolute top-2 left-2 right-2 md:top-4 md:left-4 md:right-4 flex justify-between text-xs md:text-xl z-10 pointer-events-none font-bold">
+                <div className="text-pastel-pink">SCORE: {score.toString().padStart(6, '0')}</div>
+                <div className="text-pastel-blue">
+                  {selectedModeId === 'SURVIVAL' ? `WAVE: ${wave}` : `LEVEL: ${level}`}
+                </div>
+                <div className="text-pastel-purple">LIVES: {'❤'.repeat(lives)}</div>
+              </div>
+            )}
 
-        {/* Canvas */}
-        <canvas 
-          ref={canvasRef} 
-          className="bg-[#1a1025] block rounded-xl"
-          style={{ width: '800px', height: '600px', maxWidth: '100vw', maxHeight: '100vh', objectFit: 'contain' }}
-        />
+            {/* Canvas */}
+            <canvas 
+              ref={canvasRef} 
+              className="bg-[#1a1025] block rounded-xl w-full h-full"
+            />
+          </div>
+        </div>
 
         {/* Start Screen Overlay */}
         {gameState === 'START' && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1025]/80 z-20 rounded-xl">
-            <div className="flex flex-col items-center mb-6 title-container">
-              <h1 className="text-6xl md:text-8xl font-bold title-uwu leading-none tracking-widest">
-                UWU
-              </h1>
-              <h1 className="text-5xl md:text-7xl font-bold title-invaders leading-none tracking-widest">
-                INVADERS
-              </h1>
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1025]/80 z-20 rounded-xl overflow-y-auto no-scrollbar p-4">
+            <div className="flex flex-col items-center mb-4 title-container mt-auto">
+              <img 
+                src="/Logo-UwU-Invaders.png" 
+                alt="UwU Invaders Logo" 
+                className="h-32 md:h-48 lg:h-56 w-auto object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]"
+              />
             </div>
-            <p className="text-pastel-blue text-xl mb-6 animate-pulse tracking-widest font-bold drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] text-shadow-sm">PRESS START TO PLAY ~</p>
-            <div className="flex flex-col gap-4 w-full max-w-md px-4">
+            <p className="text-pastel-blue text-lg md:text-xl mb-4 animate-pulse tracking-widest font-bold drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] text-shadow-sm">PRESS START TO PLAY ~</p>
+            <div className="flex flex-col gap-3 w-full max-w-md px-4">
               <button 
                 onClick={() => {
                   initAudio();
                   playStart();
                   setGameState('PLAYER_SELECT');
                 }}
-                className="kawaii-button kawaii-button-pink w-full py-3 text-2xl md:text-3xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-4 drop-shadow-md"
+                className="kawaii-button kawaii-button-pink w-full py-2 md:py-3 text-xl md:text-2xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3 drop-shadow-md"
               >
-                <Play className="star-icon w-8 h-8 fill-current" />
+                <Play className="star-icon w-6 h-6 md:w-8 md:h-8 fill-current" />
                 START
-                <Play className="star-icon w-8 h-8 fill-current" />
+                <Play className="star-icon w-6 h-6 md:w-8 md:h-8 fill-current" />
               </button>
               <button 
                 onClick={() => {
@@ -181,14 +194,14 @@ export default function App() {
                   playStart();
                   setGameState('HIGH_SCORES');
                 }}
-                className="kawaii-button kawaii-button-purple w-full py-3 text-2xl md:text-3xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-4 drop-shadow-md"
+                className="kawaii-button kawaii-button-purple w-full py-2 md:py-3 text-xl md:text-2xl text-white uppercase tracking-widest rounded-full font-bold flex items-center justify-center gap-3 drop-shadow-md"
               >
-                <Trophy className="w-8 h-8 fill-current" />
+                <Trophy className="w-6 h-6 md:w-8 md:h-8 fill-current" />
                 HIGH SCORES
-                <Trophy className="w-8 h-8 fill-current" />
+                <Trophy className="w-6 h-6 md:w-8 md:h-8 fill-current" />
               </button>
             </div>
-            <div className="mt-8 flex flex-col items-center gap-2 text-pastel-purple/80 text-xl tracking-widest">
+            <div className="mt-4 md:mt-6 flex flex-col items-center gap-1 md:gap-2 text-pastel-purple/80 text-sm md:text-lg tracking-widest mb-auto">
               <p>ARROWS / A D : Move</p>
               <p>SPACE : Fire</p>
             </div>
@@ -197,7 +210,7 @@ export default function App() {
 
         {/* Mode Select Overlay */}
         {gameState === 'MODE_SELECT' && (
-          <div className="absolute inset-0 bg-[#1a1025]/95 z-20 rounded-xl overflow-hidden flex flex-col items-center justify-start p-4 md:p-6">
+          <div className="absolute inset-0 bg-[#1a1025]/95 z-20 rounded-xl overflow-y-auto no-scrollbar flex flex-col items-center justify-start p-4 md:p-6">
             <h2 className="text-2xl md:text-3xl font-bold mb-1 kawaii-text text-pastel-pink shrink-0">GAME SETUP</h2>
             <p className="text-pastel-blue mb-4 tracking-widest uppercase text-[10px] md:text-xs shrink-0">Select your game style & difficulty</p>
             
@@ -266,7 +279,7 @@ export default function App() {
 
         {/* Character Select Overlay */}
         {gameState === 'PLAYER_SELECT' && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1025]/95 z-30 rounded-xl p-8">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1025]/95 z-30 rounded-xl p-4 md:p-8 overflow-y-auto no-scrollbar">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 kawaii-text text-pastel-pink">CHOOSE YOUR FIGHTER</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-2xl">
               {KAOMOJI_ROSTER.map(char => (
@@ -310,7 +323,7 @@ export default function App() {
 
         {/* High Scores Overlay */}
         {gameState === 'HIGH_SCORES' && (
-          <div className="absolute inset-0 flex flex-col items-center justify-start bg-[#1a1025]/95 z-30 rounded-xl p-8 overflow-y-auto custom-scrollbar">
+          <div className="absolute inset-0 flex flex-col items-center justify-start bg-[#1a1025]/95 z-30 rounded-xl p-8 overflow-y-auto custom-scrollbar no-scrollbar">
             <h2 className="text-4xl md:text-5xl font-bold mb-8 kawaii-text text-pastel-pink flex items-center gap-4">
               <Trophy className="w-10 h-10 text-yellow-400" />
               HIGH SCORES
@@ -345,8 +358,8 @@ export default function App() {
 
         {/* Paused Overlay */}
         {gameState === 'PAUSED' && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1025]/80 z-20 rounded-xl">
-            <h1 className="text-7xl font-bold mb-12 kawaii-text text-pastel-pink tracking-widest" data-text="PAUSED">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1025]/80 z-20 rounded-xl overflow-y-auto no-scrollbar p-4">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-12 kawaii-text text-pastel-pink tracking-widest whitespace-nowrap" data-text="PAUSED">
               PAUSED
             </h1>
             <div className="flex flex-col gap-4 w-full max-w-sm">
@@ -371,28 +384,28 @@ export default function App() {
 
         {/* Victory Overlay */}
         {gameState === 'VICTORY' && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1025]/80 z-20 rounded-xl">
-            <h1 className="text-7xl font-bold mb-4 kawaii-text text-pastel-pink" data-text="LEVEL CLEARED!">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1025]/80 z-20 rounded-xl overflow-y-auto no-scrollbar p-4">
+            <h1 className="text-3xl sm:text-4xl md:text-7xl font-bold mb-4 kawaii-text text-pastel-pink text-center whitespace-nowrap" data-text="LEVEL CLEARED!">
               LEVEL CLEARED!
             </h1>
-            <p className="text-pastel-purple text-3xl mb-8">SCORE: {score}</p>
+            <p className="text-pastel-purple text-xl md:text-3xl mb-8">SCORE: {score}</p>
             
             {isHighScore && !scoreSubmitted ? (
-              <div className="bg-[#2a1b3d] p-6 rounded-3xl border-4 border-yellow-400/50 mb-8 flex flex-col items-center gap-4">
-                <h3 className="text-2xl font-bold text-yellow-400">NEW HIGH SCORE!</h3>
-                <div className="flex gap-2">
+              <div className="bg-[#2a1b3d] p-6 rounded-3xl border-4 border-yellow-400/50 mb-8 flex flex-col items-center gap-4 w-full max-w-md">
+                <h3 className="text-2xl font-bold text-yellow-400 text-center">NEW HIGH SCORE!</h3>
+                <div className="flex flex-col sm:flex-row gap-2 w-full max-w-xs">
                   <input
                     type="text"
                     maxLength={10}
                     value={playerName}
                     onChange={(e) => setPlayerName(e.target.value.toUpperCase())}
                     placeholder="ENTER NAME"
-                    className="bg-[#1a1025] border-2 border-pastel-pink rounded-xl px-4 py-3 text-white font-bold text-xl text-center outline-none focus:border-pastel-blue uppercase w-48"
+                    className="bg-[#1a1025] border-2 border-pastel-pink rounded-xl px-4 py-3 text-white font-bold text-lg sm:text-xl text-center outline-none focus:border-pastel-blue uppercase w-full"
                   />
                   <button
                     onClick={submitHighScore}
                     disabled={!playerName.trim()}
-                    className="kawaii-button kawaii-button-pink px-6 font-bold rounded-xl disabled:opacity-50"
+                    className="kawaii-button kawaii-button-pink px-6 py-3 sm:py-0 font-bold rounded-xl disabled:opacity-50 w-full sm:w-auto"
                   >
                     SAVE
                   </button>
@@ -424,28 +437,28 @@ export default function App() {
 
         {/* Game Over Overlay */}
         {gameState === 'GAMEOVER' && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1025]/80 z-20 rounded-xl">
-            <h1 className="text-7xl font-bold mb-4 kawaii-text text-pastel-pink" data-text="OH NOES! ;w;">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1025]/80 z-20 rounded-xl overflow-y-auto no-scrollbar p-4">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold mb-4 kawaii-text text-pastel-pink text-center whitespace-nowrap" data-text="OH NOES! ;w;">
               OH NOES! ;w;
             </h1>
-            <p className="text-pastel-purple text-3xl mb-8">FINAL SCORE: {score}</p>
+            <p className="text-pastel-purple text-xl md:text-3xl mb-8">FINAL SCORE: {score}</p>
             
             {isHighScore && !scoreSubmitted ? (
-              <div className="bg-[#2a1b3d] p-6 rounded-3xl border-4 border-yellow-400/50 mb-8 flex flex-col items-center gap-4">
-                <h3 className="text-2xl font-bold text-yellow-400">NEW HIGH SCORE!</h3>
-                <div className="flex gap-2">
+              <div className="bg-[#2a1b3d] p-6 rounded-3xl border-4 border-yellow-400/50 mb-8 flex flex-col items-center gap-4 w-full max-w-md">
+                <h3 className="text-2xl font-bold text-yellow-400 text-center">NEW HIGH SCORE!</h3>
+                <div className="flex flex-col sm:flex-row gap-2 w-full max-w-xs">
                   <input
                     type="text"
                     maxLength={10}
                     value={playerName}
                     onChange={(e) => setPlayerName(e.target.value.toUpperCase())}
                     placeholder="ENTER NAME"
-                    className="bg-[#1a1025] border-2 border-pastel-pink rounded-xl px-4 py-3 text-white font-bold text-xl text-center outline-none focus:border-pastel-blue uppercase w-48"
+                    className="bg-[#1a1025] border-2 border-pastel-pink rounded-xl px-4 py-3 text-white font-bold text-lg sm:text-xl text-center outline-none focus:border-pastel-blue uppercase w-full"
                   />
                   <button
                     onClick={submitHighScore}
                     disabled={!playerName.trim()}
-                    className="kawaii-button kawaii-button-pink px-6 font-bold rounded-xl disabled:opacity-50"
+                    className="kawaii-button kawaii-button-pink px-6 py-3 sm:py-0 font-bold rounded-xl disabled:opacity-50 w-full sm:w-auto"
                   >
                     SAVE
                   </button>
