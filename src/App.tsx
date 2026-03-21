@@ -169,8 +169,9 @@ export default function App() {
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1a1025]/80 z-20 rounded-xl overflow-y-auto no-scrollbar p-4">
             <div className="flex flex-col items-center mb-4 title-container mt-auto">
               <img 
-                src="/Logo-UwU-Invaders.png" 
+                src="https://raw.githubusercontent.com/Chimthuwu/UwU-Invaders/main/public/Logo-UwU-Invaders.png" 
                 alt="UwU Invaders Logo" 
+                referrerPolicy="no-referrer"
                 className="h-32 md:h-48 lg:h-56 w-auto object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]"
               />
             </div>
