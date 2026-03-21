@@ -16,7 +16,8 @@ interface HighScore {
 }
 
 const GAME_MODES = [
-  { id: 'RETRO', name: "Retro Arcade", desc: "The Classic game. A recreation of the classic alien invaders experience.", difficulty: "Normal" },
+  { id: 'CLASSIC', name: "Classic Arcade", desc: "The original retro experience with a modern holographic twist.", difficulty: "Normal" },
+  { id: 'RETROWO', name: "Retrowo Arcade", desc: "A recreation of the classic alien invaders experience with neon green UwU faces.", difficulty: "Normal" },
   { id: 'SURVIVAL', name: "Survival", desc: "Never ending game. Swarm after swarm, increasingly faster and larger.", difficulty: "Hard" },
   { id: 'KAWAII', name: "Kawaii Arcade", desc: "Fight through UwU swarms across multiple levels with unique bosses.", difficulty: "Progressive" },
 ];
@@ -38,7 +39,7 @@ export default function App() {
   const [level, setLevel] = useState(1);
   const [wave, setWave] = useState(1);
   const [selectedChar, setSelectedChar] = useState(KAOMOJI_ROSTER[0]);
-  const [selectedModeId, setSelectedModeId] = useState<'RETRO' | 'SURVIVAL' | 'KAWAII'>('KAWAII');
+  const [selectedModeId, setSelectedModeId] = useState<'CLASSIC' | 'RETROWO' | 'SURVIVAL' | 'KAWAII'>('KAWAII');
   
   const [highScores, setHighScores] = useState<HighScore[]>([]);
   const [playerName, setPlayerName] = useState('');
