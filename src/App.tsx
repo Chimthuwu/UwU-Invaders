@@ -348,10 +348,9 @@ export default function App() {
           </button>
 
           <div 
-            className="relative flex items-center justify-center"
+            className="relative flex items-center justify-center w-full h-full"
             style={{ 
-              width: '100%',
-              maxWidth: 'calc((100vh - 40px) * 4/3)',
+              maxWidth: '100%',
               maxHeight: '100%',
               aspectRatio: '4/3'
             }}
@@ -407,6 +406,54 @@ export default function App() {
             )}
           </div>
         </div>
+
+        {showMobileControls && (
+          <div className="mobile-control-dock md:hidden">
+            <div className="mobile-plus-layout">
+              <div className="mobile-control-spacer" />
+              <button
+                type="button"
+                aria-label="Fire"
+                className="mobile-control-button mobile-fire-button"
+                {...createMobileControlHandlers('Space')}
+              >
+                <Crosshair className="h-8 w-8" />
+                <span>Fire</span>
+              </button>
+              <div className="mobile-control-spacer" />
+
+              <button
+                type="button"
+                aria-label="Move left"
+                className="mobile-control-button"
+                {...createMobileControlHandlers('ArrowLeft')}
+              >
+                <ChevronLeft className="h-8 w-8" />
+              </button>
+              <div className="mobile-control-center">+</div>
+              <button
+                type="button"
+                aria-label="Move right"
+                className="mobile-control-button"
+                {...createMobileControlHandlers('ArrowRight')}
+              >
+                <ChevronRight className="h-8 w-8" />
+              </button>
+
+              <div className="mobile-control-spacer" />
+              <button
+                type="button"
+                aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                className="mobile-control-button mobile-fullscreen-button"
+                onClick={toggleFullscreen}
+                title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+              >
+                {isFullscreen ? <Minimize className="h-7 w-7" /> : <Maximize className="h-7 w-7" />}
+              </button>
+              <div className="mobile-control-spacer" />
+            </div>
+          </div>
+        )}
 
         {/* Start Screen Overlay */}
         {gameState === 'START' && (
