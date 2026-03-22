@@ -322,6 +322,17 @@ export default function App() {
         ref={gameContainerRef}
         className="relative border-2 border-pastel-purple p-1 rounded-2xl bg-[#1a1025] flex flex-col w-full h-full max-w-4xl max-h-[800px]"
       >
+        {isTouchDevice && (
+          <button
+            onClick={toggleFullscreen}
+            className="mobile-overlay-button absolute top-2 left-2 z-40 flex items-center gap-2 rounded-full px-3 py-2 text-sm font-bold uppercase tracking-widest text-white md:hidden"
+            title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+          >
+            {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+            <span>{isFullscreen ? 'Exit' : 'Full'}</span>
+          </button>
+        )}
+        
         {/* Game Area (Canvas + HUD) */}
         <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden">
           {/* Mute Button */}
@@ -361,6 +372,38 @@ export default function App() {
               className="bg-[#1a1025] block rounded-xl w-full h-full"
             />
 
+            {showMobileControls && (
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 flex items-end justify-between px-3 pb-3 md:hidden">
+                <div className="pointer-events-auto flex gap-3">
+                  <button
+                    type="button"
+                    aria-label="Move left"
+                    className="mobile-control-button"
+                    {...createMobileControlHandlers('ArrowLeft')}
+                  >
+                    <ChevronLeft className="h-8 w-8" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Move right"
+                    className="mobile-control-button"
+                    {...createMobileControlHandlers('ArrowRight')}
+                  >
+                    <ChevronRight className="h-8 w-8" />
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  aria-label="Fire"
+                  className="mobile-control-button mobile-fire-button pointer-events-auto"
+                  {...createMobileControlHandlers('Space')}
+                >
+                  <Crosshair className="h-8 w-8" />
+                  <span>Fire</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
