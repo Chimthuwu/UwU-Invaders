@@ -373,8 +373,8 @@ export default function App() {
             />
 
             {showMobileControls && (
-              <div className="pointer-events-none absolute inset-x-0 bottom-4 z-30 flex justify-center md:hidden">
-                <div className="pointer-events-auto mobile-dpad-panel flex items-center gap-4 px-4 py-3">
+              <div className="pointer-events-none absolute left-3 bottom-3 z-30 md:hidden">
+                <div className="pointer-events-auto mobile-dpad-panel flex items-center gap-4 px-3 py-2">
                   <div className="mobile-dpad-grid">
                     <button
                       type="button"
