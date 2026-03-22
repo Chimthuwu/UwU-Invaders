@@ -6,7 +6,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CyberInvaders, GameState } from './game';
 import { initAudio, playStart, playBackgroundMusic, stopBackgroundMusic, toggleMute, getIsMuted } from './audio';
-import { Star, Heart, Users, Play, Settings, Trophy, Volume2, VolumeX } from 'lucide-react';
+import { Star, Heart, Users, Play, Settings, Trophy, Volume2, VolumeX, ChevronLeft, ChevronRight, Crosshair, Maximize, Minimize } from 'lucide-react';
 
 interface HighScore {
   name: string;
@@ -33,6 +33,7 @@ const KAOMOJI_ROSTER = [
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const gameContainerRef = useRef<HTMLDivElement>(null);
   const [gameState, setGameState] = useState<GameState>('START');
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
@@ -40,6 +41,8 @@ export default function App() {
   const [wave, setWave] = useState(1);
   const [selectedChar, setSelectedChar] = useState(KAOMOJI_ROSTER[0]);
   const [selectedModeId, setSelectedModeId] = useState<'CLASSIC' | 'RETROWO' | 'SURVIVAL' | 'KAWAII'>('KAWAII');
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
   const [highScores, setHighScores] = useState<HighScore[]>([]);
   const [playerName, setPlayerName] = useState('');
@@ -51,6 +54,35 @@ export default function App() {
   const [isMuted, setIsMuted] = useState(getIsMuted());
   const gameRef = useRef<CyberInvaders | null>(null);
   const prevGameStateRef = useRef<GameState>(gameState);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(pointer: coarse)');
+    const updateTouchMode = () => {
+      setIsTouchDevice(mediaQuery.matches || navigator.maxTouchPoints > 0);
+    };
+
+    updateTouchMode();
+    mediaQuery.addEventListener?.('change', updateTouchMode);
+    window.addEventListener('resize', updateTouchMode);
+
+    return () => {
+      mediaQuery.removeEventListener?.('change', updateTouchMode);
+      window.removeEventListener('resize', updateTouchMode);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+
+    handleFullscreenChange();
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
 
   useEffect(() => {
     const isGameplay = gameState === 'PLAYING';
@@ -67,6 +99,12 @@ export default function App() {
 
   useEffect(() => {
     setSelectedIndex(0);
+  }, [gameState]);
+
+  useEffect(() => {
+    if (gameState !== 'PLAYING') {
+      gameRef.current?.releaseAllControls();
+    }
   }, [gameState]);
 
   useEffect(() => {
@@ -213,12 +251,66 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const releaseControls = () => {
+      gameRef.current?.releaseAllControls();
+    };
+
+    window.addEventListener('pointerup', releaseControls);
+    window.addEventListener('pointercancel', releaseControls);
+    window.addEventListener('blur', releaseControls);
+
+    return () => {
+      window.removeEventListener('pointerup', releaseControls);
+      window.removeEventListener('pointercancel', releaseControls);
+      window.removeEventListener('blur', releaseControls);
+    };
+  }, []);
+
   const handleStart = () => {
     initAudio();
     playStart();
     playBackgroundMusic(true);
     gameRef.current?.startGame();
   };
+
+  const setMobileControl = (code: string, pressed: boolean) => {
+    gameRef.current?.setControlPressed(code, pressed);
+  };
+
+  const createMobileControlHandlers = (code: string) => ({
+    onPointerDown: (e: React.PointerEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      setMobileControl(code, true);
+    },
+    onPointerUp: (e: React.PointerEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      setMobileControl(code, false);
+    },
+    onPointerCancel: () => setMobileControl(code, false),
+    onPointerLeave: (e: React.PointerEvent<HTMLButtonElement>) => {
+      if (e.pointerType !== 'mouse') {
+        setMobileControl(code, false);
+      }
+    },
+  });
+
+  const toggleFullscreen = async () => {
+    const container = gameContainerRef.current;
+    if (!container) return;
+
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else {
+        await container.requestFullscreen();
+      }
+    } catch (error) {
+      console.error('Unable to toggle fullscreen mode.', error);
+    }
+  };
+
+  const showMobileControls = isTouchDevice && gameState === 'PLAYING';
 
   return (
     <div className="relative w-screen h-screen bg-[#1a1025] flex items-center justify-center overflow-hidden p-2 md:p-4">
@@ -227,8 +319,19 @@ export default function App() {
 
       {/* Game Container */}
       <div 
+        ref={gameContainerRef}
         className="relative border-2 border-pastel-purple p-1 rounded-2xl bg-[#1a1025] flex flex-col w-full h-full max-w-4xl max-h-[800px]"
       >
+        {isTouchDevice && (
+          <button
+            onClick={toggleFullscreen}
+            className="mobile-overlay-button absolute top-2 left-2 z-40 flex items-center gap-2 rounded-full px-3 py-2 text-sm font-bold uppercase tracking-widest text-white md:hidden"
+            title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+          >
+            {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+            <span>{isFullscreen ? 'Exit' : 'Full'}</span>
+          </button>
+        )}
         
         {/* Game Area (Canvas + HUD) */}
         <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden">
@@ -269,6 +372,39 @@ export default function App() {
               ref={canvasRef} 
               className="bg-[#1a1025] block rounded-xl w-full h-full"
             />
+
+            {showMobileControls && (
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 flex items-end justify-between px-3 pb-3 md:hidden">
+                <div className="pointer-events-auto flex gap-3">
+                  <button
+                    type="button"
+                    aria-label="Move left"
+                    className="mobile-control-button"
+                    {...createMobileControlHandlers('ArrowLeft')}
+                  >
+                    <ChevronLeft className="h-8 w-8" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Move right"
+                    className="mobile-control-button"
+                    {...createMobileControlHandlers('ArrowRight')}
+                  >
+                    <ChevronRight className="h-8 w-8" />
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  aria-label="Fire"
+                  className="mobile-control-button mobile-fire-button pointer-events-auto"
+                  {...createMobileControlHandlers('Space')}
+                >
+                  <Crosshair className="h-8 w-8" />
+                  <span>Fire</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -315,9 +451,10 @@ export default function App() {
                 <Trophy className="w-6 h-6 md:w-8 md:h-8 fill-current" />
               </button>
             </div>
-            <div className="mt-4 md:mt-6 flex flex-col items-center gap-1 md:gap-2 text-pastel-purple/80 text-sm md:text-lg tracking-widest mb-auto">
+            <div className="mt-4 md:mt-6 flex flex-col items-center gap-1 md:gap-2 text-pastel-purple/80 text-sm md:text-lg tracking-widest mb-auto text-center">
               <p>ARROWS / A D : Move</p>
               <p>SPACE : Fire</p>
+              {isTouchDevice && <p>TOUCH BUTTONS : MOVE / FIRE / FULLSCREEN</p>}
             </div>
           </div>
         )}
