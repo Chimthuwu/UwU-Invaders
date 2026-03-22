@@ -261,6 +261,10 @@ canvas {
 }
 
 
+<<<<<<< ours
+<<<<<<< Updated upstream
+=======
+>>>>>>> theirs
 .mobile-control-dock {
   display: flex;
   justify-content: center;
@@ -286,13 +290,126 @@ canvas {
   width: 56px;
   height: 56px;
   border-radius: 18px;
+<<<<<<< ours
+=======
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+.mobile-overlay-button {
+  background: linear-gradient(135deg, rgba(255, 179, 240, 0.9), rgba(198, 168, 255, 0.85));
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 18px rgba(255, 156, 230, 0.4);
+  backdrop-filter: blur(10px);
+}
+
+.mobile-control-button {
+  min-width: 72px;
+  min-height: 72px;
+=======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+.mobile-control-dock {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0.75rem 0.9rem;
+}
+
+.mobile-plus-layout {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  justify-items: center;
+  gap: 0.45rem;
+  width: min(240px, 100%);
+}
+
+.mobile-control-spacer {
+  width: 100%;
+  height: 100%;
+}
+
+.mobile-control-center {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 2rem;
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(255, 156, 230, 0.45);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.mobile-control-button {
+  width: 72px;
+  height: 72px;
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+  border-radius: 9999px;
+=======
+=======
+>>>>>>> theirs
+.mobile-control-dock {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0 0 0.5rem;
+}
+
+.mobile-dpad-layout {
+  display: grid;
+  grid-template-columns: repeat(3, 56px);
+  grid-template-rows: repeat(3, 56px);
+  align-items: center;
+  justify-items: center;
+  gap: 0.3rem;
+}
+
+.mobile-control-spacer {
+  width: 56px;
+  height: 56px;
+}
+
+.mobile-control-button {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+>>>>>>> Stashed changes
+=======
+>>>>>>> theirs
   border: 1px solid rgba(255, 255, 255, 0.35);
   background: linear-gradient(180deg, rgba(255, 179, 240, 0.88), rgba(198, 168, 255, 0.78));
   color: white;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+<<<<<<< ours
+<<<<<<< Updated upstream
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35), 0 0 14px rgba(255, 156, 230, 0.28);
+=======
+<<<<<<< ours
+<<<<<<< ours
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35), 0 0 18px rgba(255, 156, 230, 0.35);
+=======
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35), 0 0 14px rgba(255, 156, 230, 0.28);
+>>>>>>> theirs
+=======
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35), 0 0 14px rgba(255, 156, 230, 0.28);
+>>>>>>> theirs
+>>>>>>> Stashed changes
+=======
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35), 0 0 14px rgba(255, 156, 230, 0.28);
+>>>>>>> theirs
   backdrop-filter: blur(12px);
   touch-action: none;
   user-select: none;
@@ -301,14 +418,113 @@ canvas {
 
 .mobile-control-button:active {
   transform: scale(0.94);
+<<<<<<< ours
+<<<<<<< Updated upstream
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.32), 0 0 10px rgba(255, 156, 230, 0.25);
+=======
+<<<<<<< ours
+<<<<<<< ours
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 12px rgba(255, 156, 230, 0.3);
 }
 
+.mobile-fire-button {
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+  min-width: 96px;
+  min-height: 96px;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 1.1rem;
+=======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+  width: 86px;
+  height: 86px;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 1rem;
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+>>>>>>> Stashed changes
+}
+
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 @media (min-width: 768px) {
+<<<<<<< Updated upstream
   .mobile-control-dock,
   .mobile-dpad-layout,
   .mobile-control-spacer,
   .mobile-control-button {
+=======
+  .mobile-overlay-button,
+  .mobile-control-button,
+  .mobile-fire-button {
+=======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+.mobile-fullscreen-button {
+  width: 68px;
+  height: 68px;
+=======
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.32), 0 0 10px rgba(255, 156, 230, 0.25);
+>>>>>>> theirs
+=======
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.32), 0 0 10px rgba(255, 156, 230, 0.25);
+>>>>>>> theirs
+=======
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.32), 0 0 10px rgba(255, 156, 230, 0.25);
+>>>>>>> theirs
+}
+
+@media (min-width: 768px) {
+  .mobile-control-dock,
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+  .mobile-plus-layout,
+  .mobile-control-spacer,
+  .mobile-control-center,
+  .mobile-control-button,
+  .mobile-fire-button,
+  .mobile-fullscreen-button {
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+  .mobile-dpad-layout,
+  .mobile-control-spacer,
+  .mobile-control-button {
+>>>>>>> theirs
+=======
+  .mobile-dpad-layout,
+  .mobile-control-spacer,
+  .mobile-control-button {
+>>>>>>> theirs
+>>>>>>> Stashed changes
+=======
+  .mobile-dpad-layout,
+  .mobile-control-spacer,
+  .mobile-control-button {
+>>>>>>> theirs
     display: none;
   }
 }

@@ -6,7 +6,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CyberInvaders, GameState } from './game';
 import { initAudio, playStart, playBackgroundMusic, stopBackgroundMusic, toggleMute, getIsMuted } from './audio';
-import { Star, Heart, Users, Play, Settings, Trophy, Volume2, VolumeX, ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react';
+import { Star, Heart, Users, Play, Settings, Trophy, Volume2, VolumeX, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Maximize, Minimize } from 'lucide-react';
 
 interface HighScore {
   name: string;
@@ -33,6 +33,7 @@ const KAOMOJI_ROSTER = [
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const gameContainerRef = useRef<HTMLDivElement>(null);
   const [gameState, setGameState] = useState<GameState>('START');
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
@@ -41,6 +42,7 @@ export default function App() {
   const [selectedChar, setSelectedChar] = useState(KAOMOJI_ROSTER[0]);
   const [selectedModeId, setSelectedModeId] = useState<'CLASSIC' | 'RETROWO' | 'SURVIVAL' | 'KAWAII'>('KAWAII');
   const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
   const [highScores, setHighScores] = useState<HighScore[]>([]);
   const [playerName, setPlayerName] = useState('');
@@ -65,7 +67,20 @@ export default function App() {
 
     return () => {
       mediaQuery.removeEventListener?.('change', updateTouchMode);
-      window.removeEventListener('resize', updateTouchMode);
+    window.removeEventListener('resize', updateTouchMode);
+  };
+  }, []);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(document.fullscreenElement === gameContainerRef.current);
+    };
+
+    handleFullscreenChange();
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
     };
   }, []);
 
