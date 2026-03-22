@@ -259,3 +259,83 @@ canvas {
   0%, 100% { outline-color: white; outline-offset: 4px; }
   50% { outline-color: var(--pastel-blue); outline-offset: 8px; }
 }
+
+
+.mobile-control-dock {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0.75rem 0.9rem;
+}
+
+.mobile-plus-layout {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  justify-items: center;
+  gap: 0.45rem;
+  width: min(240px, 100%);
+}
+
+.mobile-control-spacer {
+  width: 100%;
+  height: 100%;
+}
+
+.mobile-control-center {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 2rem;
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(255, 156, 230, 0.45);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.mobile-control-button {
+  width: 72px;
+  height: 72px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: linear-gradient(180deg, rgba(255, 179, 240, 0.88), rgba(198, 168, 255, 0.78));
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35), 0 0 18px rgba(255, 156, 230, 0.35);
+  backdrop-filter: blur(12px);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.mobile-control-button:active {
+  transform: scale(0.94);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 12px rgba(255, 156, 230, 0.3);
+}
+
+.mobile-fire-button {
+  width: 86px;
+  height: 86px;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mobile-fullscreen-button {
+  width: 68px;
+  height: 68px;
+}
+
+@media (min-width: 768px) {
+  .mobile-control-dock,
+  .mobile-plus-layout,
+  .mobile-control-spacer,
+  .mobile-control-center,
+  .mobile-control-button,
+  .mobile-fire-button,
+  .mobile-fullscreen-button {
+    display: none;
+  }
+}
