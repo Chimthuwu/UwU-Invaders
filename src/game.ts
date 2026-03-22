@@ -219,6 +219,14 @@ export class CyberInvaders {
     this.keys[e.code] = false;
   };
 
+  setControlPressed(code: string, pressed: boolean) {
+    this.keys[code] = pressed;
+  }
+
+  releaseAllControls() {
+    this.keys = {};
+  }
+
   startGame() {
     this.state = 'PLAYING';
     this.score = 0;

@@ -259,3 +259,56 @@ canvas {
   0%, 100% { outline-color: white; outline-offset: 4px; }
   50% { outline-color: var(--pastel-blue); outline-offset: 8px; }
 }
+
+
+.mobile-control-dock {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0 0 0.5rem;
+}
+
+.mobile-dpad-layout {
+  display: grid;
+  grid-template-columns: repeat(3, 56px);
+  grid-template-rows: repeat(3, 56px);
+  align-items: center;
+  justify-items: center;
+  gap: 0.3rem;
+}
+
+.mobile-control-spacer {
+  width: 56px;
+  height: 56px;
+}
+
+.mobile-control-button {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: linear-gradient(180deg, rgba(255, 179, 240, 0.88), rgba(198, 168, 255, 0.78));
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35), 0 0 14px rgba(255, 156, 230, 0.28);
+  backdrop-filter: blur(12px);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.mobile-control-button:active {
+  transform: scale(0.94);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.32), 0 0 10px rgba(255, 156, 230, 0.25);
+}
+
+@media (min-width: 768px) {
+  .mobile-control-dock,
+  .mobile-dpad-layout,
+  .mobile-control-spacer,
+  .mobile-control-button {
+    display: none;
+  }
+}

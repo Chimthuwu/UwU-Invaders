@@ -6,7 +6,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CyberInvaders, GameState } from './game';
 import { initAudio, playStart, playBackgroundMusic, stopBackgroundMusic, toggleMute, getIsMuted } from './audio';
-import { Star, Heart, Users, Play, Settings, Trophy, Volume2, VolumeX } from 'lucide-react';
+import { Star, Heart, Users, Play, Settings, Trophy, Volume2, VolumeX, ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react';
 
 interface HighScore {
   name: string;
@@ -40,6 +40,7 @@ export default function App() {
   const [wave, setWave] = useState(1);
   const [selectedChar, setSelectedChar] = useState(KAOMOJI_ROSTER[0]);
   const [selectedModeId, setSelectedModeId] = useState<'CLASSIC' | 'RETROWO' | 'SURVIVAL' | 'KAWAII'>('KAWAII');
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
   
   const [highScores, setHighScores] = useState<HighScore[]>([]);
   const [playerName, setPlayerName] = useState('');
@@ -51,6 +52,23 @@ export default function App() {
   const [isMuted, setIsMuted] = useState(getIsMuted());
   const gameRef = useRef<CyberInvaders | null>(null);
   const prevGameStateRef = useRef<GameState>(gameState);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(pointer: coarse)');
+    const updateTouchMode = () => {
+      setIsTouchDevice(mediaQuery.matches || navigator.maxTouchPoints > 0);
+    };
+
+    updateTouchMode();
+    mediaQuery.addEventListener?.('change', updateTouchMode);
+    window.addEventListener('resize', updateTouchMode);
+
+    return () => {
+      mediaQuery.removeEventListener?.('change', updateTouchMode);
+      window.removeEventListener('resize', updateTouchMode);
+    };
+  }, []);
+
 
   useEffect(() => {
     const isGameplay = gameState === 'PLAYING';
@@ -67,6 +85,12 @@ export default function App() {
 
   useEffect(() => {
     setSelectedIndex(0);
+  }, [gameState]);
+
+  useEffect(() => {
+    if (gameState !== 'PLAYING') {
+      gameRef.current?.releaseAllControls();
+    }
   }, [gameState]);
 
   useEffect(() => {
@@ -213,6 +237,22 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const releaseControls = () => {
+      gameRef.current?.releaseAllControls();
+    };
+
+    window.addEventListener('pointerup', releaseControls);
+    window.addEventListener('pointercancel', releaseControls);
+    window.addEventListener('blur', releaseControls);
+
+    return () => {
+      window.removeEventListener('pointerup', releaseControls);
+      window.removeEventListener('pointercancel', releaseControls);
+      window.removeEventListener('blur', releaseControls);
+    };
+  }, []);
+
   const handleStart = () => {
     initAudio();
     playStart();
@@ -220,16 +260,37 @@ export default function App() {
     gameRef.current?.startGame();
   };
 
+  const setMobileControl = (code: string, pressed: boolean) => {
+    gameRef.current?.setControlPressed(code, pressed);
+  };
+
+  const createMobileControlHandlers = (code: string) => ({
+    onPointerDown: (e: React.PointerEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      setMobileControl(code, true);
+    },
+    onPointerUp: (e: React.PointerEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      setMobileControl(code, false);
+    },
+    onPointerCancel: () => setMobileControl(code, false),
+    onPointerLeave: (e: React.PointerEvent<HTMLButtonElement>) => {
+      if (e.pointerType !== 'mouse') {
+        setMobileControl(code, false);
+      }
+    },
+  });
+
+  const showMobileControls = isTouchDevice && gameState === 'PLAYING';
+
   return (
     <div className="relative w-screen h-screen bg-[#1a1025] flex items-center justify-center overflow-hidden p-2 md:p-4">
       {/* CRT Overlay */}
       <div className="crt-overlay"></div>
 
       {/* Game Container */}
-      <div 
-        className="relative border-2 border-pastel-purple p-1 rounded-2xl bg-[#1a1025] flex flex-col w-full h-full max-w-4xl max-h-[800px]"
-      >
-        
+      <div className="w-full h-full max-w-4xl max-h-[900px] flex flex-col items-center gap-3 md:gap-0">
+        <div className="relative border-2 border-pastel-purple p-1 rounded-2xl bg-[#1a1025] flex flex-col w-full flex-1 min-h-0 md:h-full md:max-h-[800px]">
         {/* Game Area (Canvas + HUD) */}
         <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden">
           {/* Mute Button */}
@@ -245,10 +306,9 @@ export default function App() {
           </button>
 
           <div 
-            className="relative flex items-center justify-center"
+            className="relative flex items-center justify-center w-full h-full"
             style={{ 
-              width: '100%',
-              maxWidth: 'calc((100vh - 40px) * 4/3)',
+              maxWidth: '100%',
               maxHeight: '100%',
               aspectRatio: '4/3'
             }}
@@ -269,6 +329,7 @@ export default function App() {
               ref={canvasRef} 
               className="bg-[#1a1025] block rounded-xl w-full h-full"
             />
+
           </div>
         </div>
 
@@ -315,9 +376,10 @@ export default function App() {
                 <Trophy className="w-6 h-6 md:w-8 md:h-8 fill-current" />
               </button>
             </div>
-            <div className="mt-4 md:mt-6 flex flex-col items-center gap-1 md:gap-2 text-pastel-purple/80 text-sm md:text-lg tracking-widest mb-auto">
+            <div className="mt-4 md:mt-6 flex flex-col items-center gap-1 md:gap-2 text-pastel-purple/80 text-sm md:text-lg tracking-widest mb-auto text-center">
               <p>ARROWS / A D : Move</p>
               <p>SPACE : Fire</p>
+              {isTouchDevice && <p>TOUCH D-PAD : UP / DOWN / LEFT / RIGHT</p>}
             </div>
           </div>
         )}
@@ -577,6 +639,53 @@ export default function App() {
               >
                 MAIN MENU
               </button>
+            </div>
+          </div>
+        )}
+        </div>
+
+        {showMobileControls && (
+          <div className="mobile-control-dock md:hidden">
+            <div className="mobile-dpad-layout">
+              <div className="mobile-control-spacer" />
+              <button
+                type="button"
+                aria-label="Up"
+                className="mobile-control-button"
+                {...createMobileControlHandlers('ArrowUp')}
+              >
+                <ChevronUp className="h-7 w-7" />
+              </button>
+              <div className="mobile-control-spacer" />
+
+              <button
+                type="button"
+                aria-label="Left"
+                className="mobile-control-button"
+                {...createMobileControlHandlers('ArrowLeft')}
+              >
+                <ChevronLeft className="h-7 w-7" />
+              </button>
+              <div className="mobile-control-spacer" />
+              <button
+                type="button"
+                aria-label="Right"
+                className="mobile-control-button"
+                {...createMobileControlHandlers('ArrowRight')}
+              >
+                <ChevronRight className="h-7 w-7" />
+              </button>
+
+              <div className="mobile-control-spacer" />
+              <button
+                type="button"
+                aria-label="Down"
+                className="mobile-control-button"
+                {...createMobileControlHandlers('ArrowDown')}
+              >
+                <ChevronDown className="h-7 w-7" />
+              </button>
+              <div className="mobile-control-spacer" />
             </div>
           </div>
         )}
