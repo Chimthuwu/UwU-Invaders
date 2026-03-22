@@ -67,8 +67,8 @@ export default function App() {
 
     return () => {
       mediaQuery.removeEventListener?.('change', updateTouchMode);
-    window.removeEventListener('resize', updateTouchMode);
-  };
+      window.removeEventListener('resize', updateTouchMode);
+    };
   }, []);
 
   useEffect(() => {
@@ -296,6 +296,21 @@ export default function App() {
     },
   });
 
+  const toggleFullscreen = async () => {
+    const container = gameContainerRef.current;
+    if (!container) return;
+
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else {
+        await container.requestFullscreen();
+      }
+    } catch (error) {
+      console.error('Unable to toggle fullscreen mode.', error);
+    }
+  };
+
   const showMobileControls = isTouchDevice && gameState === 'PLAYING';
 
   return (
@@ -305,7 +320,10 @@ export default function App() {
 
       {/* Game Container */}
       <div className="w-full h-full max-w-4xl max-h-[900px] flex flex-col items-center gap-3 md:gap-0">
-        <div className="relative border-2 border-pastel-purple p-1 rounded-2xl bg-[#1a1025] flex flex-col w-full flex-1 min-h-0 md:h-full md:max-h-[800px]">
+        <div
+          ref={gameContainerRef}
+          className="relative border-2 border-pastel-purple p-1 rounded-2xl bg-[#1a1025] flex flex-col w-full flex-1 min-h-0 md:h-full md:max-h-[800px]"
+        >
         {/* Game Area (Canvas + HUD) */}
         <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden">
           {/* Mute Button */}
@@ -394,7 +412,12 @@ export default function App() {
             <div className="mt-4 md:mt-6 flex flex-col items-center gap-1 md:gap-2 text-pastel-purple/80 text-sm md:text-lg tracking-widest mb-auto text-center">
               <p>ARROWS / A D : Move</p>
               <p>SPACE : Fire</p>
-              {isTouchDevice && <p>TOUCH D-PAD : UP / DOWN / LEFT / RIGHT</p>}
+              {isTouchDevice && (
+                <>
+                  <p>TOUCH D-PAD : UP / DOWN / LEFT / RIGHT</p>
+                  <p>FULLSCREEN BUTTON AND PAD BELOW</p>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -702,6 +725,15 @@ export default function App() {
               </button>
               <div className="mobile-control-spacer" />
             </div>
+            <button
+              type="button"
+              aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+              title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+              onClick={toggleFullscreen}
+              className="mobile-fullscreen-button"
+            >
+              {isFullscreen ? <Minimize className="h-6 w-6" /> : <Maximize className="h-6 w-6" />}
+            </button>
           </div>
         )}
       </div>
