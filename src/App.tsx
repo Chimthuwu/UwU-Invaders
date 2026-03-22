@@ -6,7 +6,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CyberInvaders, GameState } from './game';
 import { initAudio, playStart, playBackgroundMusic, stopBackgroundMusic, toggleMute, getIsMuted } from './audio';
-import { Star, Heart, Users, Play, Settings, Trophy, Volume2, VolumeX, ChevronLeft, ChevronRight, Crosshair, Maximize, Minimize } from 'lucide-react';
+import { Star, Heart, Users, Play, Settings, Trophy, Volume2, VolumeX, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Crosshair, Maximize, Minimize } from 'lucide-react';
 
 interface HighScore {
   name: string;
@@ -373,87 +373,66 @@ export default function App() {
             />
 
             {showMobileControls && (
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 flex items-end justify-between px-3 pb-3 md:hidden">
-                <div className="pointer-events-auto flex gap-3">
+              <div className="pointer-events-none absolute inset-x-0 bottom-4 z-30 flex justify-center md:hidden">
+                <div className="pointer-events-auto flex items-center gap-3 rounded-2xl bg-black/40 backdrop-blur px-3 py-2 shadow-[0_0_25px_rgba(0,0,0,0.65)]">
+                  <div className="mobile-dpad">
+                    <button
+                      type="button"
+                      aria-label="Move up"
+                      className="mobile-dpad-button"
+                      {...createMobileControlHandlers('ArrowUp')}
+                    >
+                      <ChevronUp className="h-4 w-4" />
+                    </button>
+                    <div className="mobile-dpad-row">
+                      <button
+                        type="button"
+                        aria-label="Move left"
+                        className="mobile-dpad-button"
+                        {...createMobileControlHandlers('ArrowLeft')}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Fire"
+                        className="mobile-dpad-button mobile-dpad-fire"
+                        {...createMobileControlHandlers('Space')}
+                      >
+                        <Crosshair className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Move right"
+                        className="mobile-dpad-button"
+                        {...createMobileControlHandlers('ArrowRight')}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <button
+                      type="button"
+                      aria-label="Move down"
+                      className="mobile-dpad-button"
+                      {...createMobileControlHandlers('ArrowDown')}
+                    >
+                      <ChevronDown className="h-4 w-4" />
+                    </button>
+                  </div>
                   <button
                     type="button"
-                    aria-label="Move left"
-                    className="mobile-control-button"
-                    {...createMobileControlHandlers('ArrowLeft')}
+                    aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                    className="mobile-fullscreen-button"
+                    onClick={toggleFullscreen}
+                    title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
                   >
-                    <ChevronLeft className="h-8 w-8" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Move right"
-                    className="mobile-control-button"
-                    {...createMobileControlHandlers('ArrowRight')}
-                  >
-                    <ChevronRight className="h-8 w-8" />
+                    {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
                   </button>
                 </div>
-
-                <button
-                  type="button"
-                  aria-label="Fire"
-                  className="mobile-control-button mobile-fire-button pointer-events-auto"
-                  {...createMobileControlHandlers('Space')}
-                >
-                  <Crosshair className="h-8 w-8" />
-                  <span>Fire</span>
-                </button>
               </div>
             )}
           </div>
         </div>
-
-        {showMobileControls && (
-          <div className="mobile-control-dock md:hidden">
-            <div className="mobile-plus-layout">
-              <div className="mobile-control-spacer" />
-              <button
-                type="button"
-                aria-label="Fire"
-                className="mobile-control-button mobile-fire-button"
-                {...createMobileControlHandlers('Space')}
-              >
-                <Crosshair className="h-8 w-8" />
-                <span>Fire</span>
-              </button>
-              <div className="mobile-control-spacer" />
-
-              <button
-                type="button"
-                aria-label="Move left"
-                className="mobile-control-button"
-                {...createMobileControlHandlers('ArrowLeft')}
-              >
-                <ChevronLeft className="h-8 w-8" />
-              </button>
-              <div className="mobile-control-center">+</div>
-              <button
-                type="button"
-                aria-label="Move right"
-                className="mobile-control-button"
-                {...createMobileControlHandlers('ArrowRight')}
-              >
-                <ChevronRight className="h-8 w-8" />
-              </button>
-
-              <div className="mobile-control-spacer" />
-              <button
-                type="button"
-                aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-                className="mobile-control-button mobile-fullscreen-button"
-                onClick={toggleFullscreen}
-                title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-              >
-                {isFullscreen ? <Minimize className="h-7 w-7" /> : <Maximize className="h-7 w-7" />}
-              </button>
-              <div className="mobile-control-spacer" />
-            </div>
-          </div>
-        )}
 
         {/* Start Screen Overlay */}
         {gameState === 'START' && (

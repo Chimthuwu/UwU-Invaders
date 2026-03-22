@@ -268,43 +268,68 @@ canvas {
   backdrop-filter: blur(10px);
 }
 
-.mobile-control-button {
-  min-width: 72px;
-  min-height: 72px;
-  border-radius: 9999px;
+.mobile-dpad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.mobile-dpad-row {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.mobile-dpad-button {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.35);
   background: linear-gradient(180deg, rgba(255, 179, 240, 0.88), rgba(198, 168, 255, 0.78));
   color: white;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35), 0 0 18px rgba(255, 156, 230, 0.35);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.45), 0 0 12px rgba(255, 156, 230, 0.35);
   backdrop-filter: blur(12px);
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
 }
 
-.mobile-control-button:active {
+.mobile-dpad-button:active {
   transform: scale(0.94);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 0 12px rgba(255, 156, 230, 0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45), 0 0 10px rgba(255, 156, 230, 0.3);
 }
 
-.mobile-fire-button {
-  min-width: 96px;
-  min-height: 96px;
-  flex-direction: column;
-  gap: 0.2rem;
-  font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.mobile-dpad-fire {
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.55), rgba(255, 179, 240, 0.75));
+  color: #1a1025;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.9), inset 0 0 10px rgba(255, 255, 255, 0.6);
+}
+
+.mobile-fullscreen-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 @media (min-width: 768px) {
   .mobile-overlay-button,
-  .mobile-control-button,
-  .mobile-fire-button {
+  .mobile-dpad,
+  .mobile-dpad-button,
+  .mobile-fullscreen-button {
     display: none;
   }
 }
