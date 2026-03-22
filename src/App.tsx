@@ -374,8 +374,8 @@ export default function App() {
 
             {showMobileControls && (
               <div className="pointer-events-none absolute inset-x-0 bottom-4 z-30 flex justify-center md:hidden">
-                <div className="pointer-events-auto flex items-center gap-3 rounded-2xl bg-black/40 backdrop-blur px-3 py-2 shadow-[0_0_25px_rgba(0,0,0,0.65)]">
-                  <div className="mobile-dpad">
+                <div className="pointer-events-auto mobile-dpad-panel flex items-center gap-4 px-4 py-3">
+                  <div className="mobile-dpad-grid">
                     <button
                       type="button"
                       aria-label="Move up"
