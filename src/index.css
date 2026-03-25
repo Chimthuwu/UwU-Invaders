@@ -260,87 +260,31 @@ canvas {
   50% { outline-color: var(--pastel-blue); outline-offset: 8px; }
 }
 
-
-.mobile-overlay-button {
-  background: linear-gradient(135deg, rgba(255, 179, 240, 0.9), rgba(198, 168, 255, 0.85));
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  box-shadow: 0 0 18px rgba(255, 156, 230, 0.4);
-  backdrop-filter: blur(10px);
+.d-pad-button {
+  background: var(--pastel-purple);
+  box-shadow: 
+    inset 0 4px 6px rgba(255, 255, 255, 0.4),
+    inset 0 -4px 6px rgba(0, 0, 0, 0.4),
+    0 4px 10px rgba(0, 0, 0, 0.3);
+  border: none;
+  cursor: pointer;
+  transition: all 0.1s;
+  position: relative;
+  overflow: hidden;
 }
 
-.mobile-dpad-panel {
-  border-radius: 18px;
-  background: rgba(13, 9, 26, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65), inset 0 0 12px rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(16px);
-  max-width: fit-content;
-  padding: 0.4rem 0.6rem;
+.d-pad-button::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
+  pointer-events: none;
 }
 
-.mobile-dpad-grid {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.mobile-dpad-row {
-  display: flex;
-  gap: 0.25rem;
-}
-
-.mobile-dpad-button {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: linear-gradient(180deg, rgba(255, 179, 240, 0.88), rgba(198, 168, 255, 0.78));
-  color: white;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.45), 0 0 12px rgba(255, 156, 230, 0.35);
-  backdrop-filter: blur(12px);
-  touch-action: none;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.mobile-dpad-button:active {
-  transform: scale(0.94);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45), 0 0 10px rgba(255, 156, 230, 0.3);
-}
-
-.mobile-dpad-fire {
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.55), rgba(255, 179, 240, 0.75));
-  color: #1a1025;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.9), inset 0 0 10px rgba(255, 255, 255, 0.6);
-}
-
-.mobile-fullscreen-button {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
-  color: white;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(12px);
-  touch-action: none;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-@media (min-width: 768px) {
-  .mobile-overlay-button,
-  .mobile-dpad-panel,
-  .mobile-dpad-row,
-  .mobile-dpad-button,
-  .mobile-fullscreen-button {
-    display: none;
-  }
+.d-pad-button:active {
+  transform: scale(0.95);
+  filter: brightness(1.2);
+  box-shadow: 
+    inset 0 2px 4px rgba(255, 255, 255, 0.2),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.2);
 }
