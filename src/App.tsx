@@ -6,7 +6,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CyberInvaders, GameState } from './game';
 import { initAudio, playStart, playBackgroundMusic, stopBackgroundMusic, toggleMute, getIsMuted } from './audio';
-import { Star, Heart, Users, Play, Settings, Trophy, Volume2, VolumeX, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Crosshair, Maximize, Minimize } from 'lucide-react';
+import { Star, Heart, Users, Play, Settings, Trophy, Volume2, VolumeX, Triangle, Maximize, Minimize } from 'lucide-react';
 
 interface HighScore {
   name: string;
@@ -33,7 +33,6 @@ const KAOMOJI_ROSTER = [
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const gameContainerRef = useRef<HTMLDivElement>(null);
   const [gameState, setGameState] = useState<GameState>('START');
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
@@ -41,8 +40,6 @@ export default function App() {
   const [wave, setWave] = useState(1);
   const [selectedChar, setSelectedChar] = useState(KAOMOJI_ROSTER[0]);
   const [selectedModeId, setSelectedModeId] = useState<'CLASSIC' | 'RETROWO' | 'SURVIVAL' | 'KAWAII'>('KAWAII');
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   
   const [highScores, setHighScores] = useState<HighScore[]>([]);
   const [playerName, setPlayerName] = useState('');
@@ -52,37 +49,45 @@ export default function App() {
   const nameInputRef = useRef<HTMLInputElement>(null);
   
   const [isMuted, setIsMuted] = useState(getIsMuted());
+  const [isFullScreen, setIsFullScreen] = useState(false);
   const gameRef = useRef<CyberInvaders | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const prevGameStateRef = useRef<GameState>(gameState);
 
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(pointer: coarse)');
-    const updateTouchMode = () => {
-      setIsTouchDevice(mediaQuery.matches || navigator.maxTouchPoints > 0);
-    };
+  const toggleFullScreen = () => {
+    if (!containerRef.current) return;
 
-    updateTouchMode();
-    mediaQuery.addEventListener?.('change', updateTouchMode);
-    window.addEventListener('resize', updateTouchMode);
-
-    return () => {
-      mediaQuery.removeEventListener?.('change', updateTouchMode);
-      window.removeEventListener('resize', updateTouchMode);
-    };
-  }, []);
+    if (!document.fullscreenElement) {
+      containerRef.current.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
 
   useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(Boolean(document.fullscreenElement));
+    const handleFullScreenChange = () => {
+      setIsFullScreen(!!document.fullscreenElement);
     };
 
-    handleFullscreenChange();
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-    };
+    document.addEventListener('fullscreenchange', handleFullScreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullScreenChange);
   }, []);
+
+  const handleControl = (code: string, pressed: boolean) => {
+    // Update game engine keys directly
+    if (gameRef.current) {
+      gameRef.current.keys[code] = pressed;
+    }
+    
+    // For React menus, we dispatch a real event for the navigation useEffect to catch
+    if (pressed) {
+      window.dispatchEvent(new KeyboardEvent('keydown', { code }));
+    } else {
+      window.dispatchEvent(new KeyboardEvent('keyup', { code }));
+    }
+  };
 
   useEffect(() => {
     const isGameplay = gameState === 'PLAYING';
@@ -99,12 +104,6 @@ export default function App() {
 
   useEffect(() => {
     setSelectedIndex(0);
-  }, [gameState]);
-
-  useEffect(() => {
-    if (gameState !== 'PLAYING') {
-      gameRef.current?.releaseAllControls();
-    }
   }, [gameState]);
 
   useEffect(() => {
@@ -251,66 +250,12 @@ export default function App() {
     };
   }, []);
 
-  useEffect(() => {
-    const releaseControls = () => {
-      gameRef.current?.releaseAllControls();
-    };
-
-    window.addEventListener('pointerup', releaseControls);
-    window.addEventListener('pointercancel', releaseControls);
-    window.addEventListener('blur', releaseControls);
-
-    return () => {
-      window.removeEventListener('pointerup', releaseControls);
-      window.removeEventListener('pointercancel', releaseControls);
-      window.removeEventListener('blur', releaseControls);
-    };
-  }, []);
-
   const handleStart = () => {
     initAudio();
     playStart();
     playBackgroundMusic(true);
     gameRef.current?.startGame();
   };
-
-  const setMobileControl = (code: string, pressed: boolean) => {
-    gameRef.current?.setControlPressed(code, pressed);
-  };
-
-  const createMobileControlHandlers = (code: string) => ({
-    onPointerDown: (e: React.PointerEvent<HTMLButtonElement>) => {
-      e.preventDefault();
-      setMobileControl(code, true);
-    },
-    onPointerUp: (e: React.PointerEvent<HTMLButtonElement>) => {
-      e.preventDefault();
-      setMobileControl(code, false);
-    },
-    onPointerCancel: () => setMobileControl(code, false),
-    onPointerLeave: (e: React.PointerEvent<HTMLButtonElement>) => {
-      if (e.pointerType !== 'mouse') {
-        setMobileControl(code, false);
-      }
-    },
-  });
-
-  const toggleFullscreen = async () => {
-    const container = gameContainerRef.current;
-    if (!container) return;
-
-    try {
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
-      } else {
-        await container.requestFullscreen();
-      }
-    } catch (error) {
-      console.error('Unable to toggle fullscreen mode.', error);
-    }
-  };
-
-  const showMobileControls = isTouchDevice && gameState === 'PLAYING';
 
   return (
     <div className="relative w-screen h-screen bg-[#1a1025] flex items-center justify-center overflow-hidden p-2 md:p-4">
@@ -319,40 +264,39 @@ export default function App() {
 
       {/* Game Container */}
       <div 
-        ref={gameContainerRef}
-        className="relative border-2 border-pastel-purple p-1 rounded-2xl bg-[#1a1025] flex flex-col w-full h-full max-w-4xl max-h-[800px]"
+        ref={containerRef}
+        className="relative border-2 border-pastel-purple p-1 rounded-2xl bg-[#1a1025] flex flex-col w-full h-full max-w-2xl lg:max-w-4xl max-h-[90vh] md:max-h-[800px] shadow-[0_0_50px_rgba(197,156,255,0.3)]"
       >
-        {isTouchDevice && (
-          <button
-            onClick={toggleFullscreen}
-            className="mobile-overlay-button absolute top-2 left-2 z-40 flex items-center gap-2 rounded-full px-3 py-2 text-sm font-bold uppercase tracking-widest text-white md:hidden"
-            title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-          >
-            {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
-            <span>{isFullscreen ? 'Exit' : 'Full'}</span>
-          </button>
-        )}
         
         {/* Game Area (Canvas + HUD) */}
-        <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden">
-          {/* Mute Button */}
-          <button 
-            onClick={() => {
-              const muted = toggleMute();
-              setIsMuted(muted);
-            }}
-            className="absolute top-2 right-2 md:top-4 md:right-4 z-30 p-2 rounded-full bg-black/40 border border-white/20 text-white hover:bg-black/60 transition-colors"
-            title={isMuted ? "Unmute Music" : "Mute Music"}
-          >
-            {isMuted ? <VolumeX className="w-5 h-5 md:w-6 md:h-6" /> : <Volume2 className="w-5 h-5 md:w-6 md:h-6" />}
-          </button>
+        <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden p-2">
+          {/* Controls Overlay (Mute + Fullscreen) */}
+          <div className="absolute top-4 right-4 z-30 flex gap-2">
+            <button 
+              onClick={toggleFullScreen}
+              className="p-2 rounded-full bg-black/40 border border-white/20 text-white hover:bg-black/60 transition-colors"
+              title={isFullScreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+            >
+              {isFullScreen ? <Minimize className="w-5 h-5 md:w-6 md:h-6" /> : <Maximize className="w-5 h-5 md:w-6 md:h-6" />}
+            </button>
+            <button 
+              onClick={() => {
+                const muted = toggleMute();
+                setIsMuted(muted);
+              }}
+              className="p-2 rounded-full bg-black/40 border border-white/20 text-white hover:bg-black/60 transition-colors"
+              title={isMuted ? "Unmute Music" : "Mute Music"}
+            >
+              {isMuted ? <VolumeX className="w-5 h-5 md:w-6 md:h-6" /> : <Volume2 className="w-5 h-5 md:w-6 md:h-6" />}
+            </button>
+          </div>
 
           <div 
             className="relative flex items-center justify-center w-full h-full"
             style={{ 
-              maxWidth: '100%',
+              aspectRatio: '4/3',
               maxHeight: '100%',
-              aspectRatio: '4/3'
+              maxWidth: '100%'
             }}
           >
             {/* HUD */}
@@ -371,66 +315,58 @@ export default function App() {
               ref={canvasRef} 
               className="bg-[#1a1025] block rounded-xl w-full h-full"
             />
+          </div>
+        </div>
 
-            {showMobileControls && (
-              <div className="pointer-events-none absolute left-3 bottom-3 z-30 md:hidden">
-                <div className="pointer-events-auto mobile-dpad-panel flex items-center gap-4 px-3 py-2">
-                  <div className="mobile-dpad-grid">
-                    <button
-                      type="button"
-                      aria-label="Move up"
-                      className="mobile-dpad-button"
-                      {...createMobileControlHandlers('ArrowUp')}
-                    >
-                      <ChevronUp className="h-4 w-4" />
-                    </button>
-                    <div className="mobile-dpad-row">
-                      <button
-                        type="button"
-                        aria-label="Move left"
-                        className="mobile-dpad-button"
-                        {...createMobileControlHandlers('ArrowLeft')}
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        aria-label="Fire"
-                        className="mobile-dpad-button mobile-dpad-fire"
-                        {...createMobileControlHandlers('Space')}
-                      >
-                        <Crosshair className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        aria-label="Move right"
-                        className="mobile-dpad-button"
-                        {...createMobileControlHandlers('ArrowRight')}
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </button>
-                    </div>
-                    <button
-                      type="button"
-                      aria-label="Move down"
-                      className="mobile-dpad-button"
-                      {...createMobileControlHandlers('ArrowDown')}
-                    >
-                      <ChevronDown className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <button
-                    type="button"
-                    aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-                    className="mobile-fullscreen-button"
-                    onClick={toggleFullscreen}
-                    title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-                  >
-                    {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
-            )}
+        {/* Mobile Controls - D-Pad (Hidden on Desktop) */}
+        <div className="flex md:hidden flex-col items-center justify-center p-6 bg-black/20 rounded-b-2xl border-t border-pastel-purple/30 shrink-0">
+          <div className="relative w-36 h-36 grid grid-cols-3 grid-rows-3 gap-0">
+            {/* Up / Fire */}
+            <button 
+              className="col-start-2 row-start-1 d-pad-button rounded-t-xl flex items-center justify-center text-pastel-blue active:brightness-125"
+              onPointerDown={(e) => { e.preventDefault(); handleControl('Space', true); }}
+              onPointerUp={(e) => { e.preventDefault(); handleControl('Space', false); }}
+              onPointerLeave={(e) => { e.preventDefault(); handleControl('Space', false); }}
+              onContextMenu={(e) => e.preventDefault()}
+            >
+              <Triangle className="w-6 h-6 md:w-8 md:h-8 fill-current" />
+            </button>
+            
+            {/* Left */}
+            <button 
+              className="col-start-1 row-start-2 d-pad-button rounded-l-xl flex items-center justify-center text-pastel-blue active:brightness-125"
+              onPointerDown={(e) => { e.preventDefault(); handleControl('ArrowLeft', true); }}
+              onPointerUp={(e) => { e.preventDefault(); handleControl('ArrowLeft', false); }}
+              onPointerLeave={(e) => { e.preventDefault(); handleControl('ArrowLeft', false); }}
+              onContextMenu={(e) => e.preventDefault()}
+            >
+              <Triangle className="w-6 h-6 md:w-8 md:h-8 fill-current -rotate-90" />
+            </button>
+            
+            {/* Center - Static part of the D-pad */}
+            <div className="col-start-2 row-start-2 bg-pastel-purple shadow-[inset_0_0_10px_rgba(0,0,0,0.2)]"></div>
+            
+            {/* Right */}
+            <button 
+              className="col-start-3 row-start-2 d-pad-button rounded-r-xl flex items-center justify-center text-pastel-blue active:brightness-125"
+              onPointerDown={(e) => { e.preventDefault(); handleControl('ArrowRight', true); }}
+              onPointerUp={(e) => { e.preventDefault(); handleControl('ArrowRight', false); }}
+              onPointerLeave={(e) => { e.preventDefault(); handleControl('ArrowRight', false); }}
+              onContextMenu={(e) => e.preventDefault()}
+            >
+              <Triangle className="w-6 h-6 md:w-8 md:h-8 fill-current rotate-90" />
+            </button>
+            
+            {/* Down / Pause */}
+            <button 
+              className="col-start-2 row-start-3 d-pad-button rounded-b-xl flex items-center justify-center text-pastel-blue active:brightness-125"
+              onPointerDown={(e) => { e.preventDefault(); handleControl('ArrowDown', true); }}
+              onPointerUp={(e) => { e.preventDefault(); handleControl('ArrowDown', false); }}
+              onPointerLeave={(e) => { e.preventDefault(); handleControl('ArrowDown', false); }}
+              onContextMenu={(e) => e.preventDefault()}
+            >
+              <Triangle className="w-6 h-6 md:w-8 md:h-8 fill-current rotate-180" />
+            </button>
           </div>
         </div>
 
@@ -477,10 +413,9 @@ export default function App() {
                 <Trophy className="w-6 h-6 md:w-8 md:h-8 fill-current" />
               </button>
             </div>
-            <div className="mt-4 md:mt-6 flex flex-col items-center gap-1 md:gap-2 text-pastel-purple/80 text-sm md:text-lg tracking-widest mb-auto text-center">
+            <div className="mt-4 md:mt-6 flex flex-col items-center gap-1 md:gap-2 text-pastel-purple/80 text-sm md:text-lg tracking-widest mb-auto">
               <p>ARROWS / A D : Move</p>
               <p>SPACE : Fire</p>
-              {isTouchDevice && <p>TOUCH BUTTONS : MOVE / FIRE / FULLSCREEN</p>}
             </div>
           </div>
         )}

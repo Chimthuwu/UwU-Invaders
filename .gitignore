@@ -6,7 +6,3 @@ coverage/
 *.log
 .env*
 !.env.example
-.codex/environments/environment.toml
-.codex/environments/environment.toml
-.codex/environments/environment.toml
-.codex/environments/environment.toml
