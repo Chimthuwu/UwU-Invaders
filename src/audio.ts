@@ -5,10 +5,16 @@ let isMuted = false;
 let currentTrack: string | null = null;
 
 const MUSIC_FILES = [
+  '/audio/Afternoon Glow - Lyserge (ft Olga).mp3',
   '/audio/In this safe - serge rybak.mp3',
+  '/audio/Land On Your NEW.mp3',
+  '/audio/LED Juggling_(Doof)_19.mp3',
   '/audio/Lil lamplight.mp3',
+  '/audio/Low Low Rumble.mp3',
   '/audio/Melancholics Anonymous - S3rge Rybak.mp3',
-  '/audio/Memowave.mp3'
+  '/audio/Memowave.mp3',
+  '/audio/Scrambled Circuitry - Serg [FREE DL].mp3',
+  '/audio/The Purge - Lyserge.mp3'
 ];
 
 export const initAudio = () => {
