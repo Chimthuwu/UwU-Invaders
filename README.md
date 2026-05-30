@@ -1,20 +1,105 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+<p align="center">
+  <img src="https://uwu-invaders-uwu.pages.dev/preview.png" width="480" />
+</p>
 
-# Run and deploy your AI Studio app
+<h1 align="center">👾 UwU Invaders 👾</h1>
 
-This contains everything you need to run your app locally.
+<p align="center">
+  A chaotic, cursed, and adorable take on classic space shooters.
+</p>
 
-View your app in AI Studio: https://ai.studio/apps/19a3154e-9781-41d2-b821-9430628bd1cf
+<p align="center">
+  👉 <a href="https://uwu-invaders-uwu.pages.dev/">Play Now</a>
+</p>
 
-## Run Locally
+---
 
-**Prerequisites:**  Node.js
+## ✨ About
 
+**UwU Invaders** is a fast-paced, browser-based shooter inspired by retro classics like Space Invaders, but infused with pure **UwU chaos energy**.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Dodge. Shoot. Survive.  
+Or get absolutely overwhelmed by the cutest invasion imaginable.
+
+---
+
+## 🎮 Features
+
+- 💥 Classic arcade-style gameplay  
+- 🧠 Increasing difficulty (it *will* get unfair)  
+- 🎯 Score tracking & survival mechanics  
+- 🐾 UwU-themed enemies & vibes  
+- ⚡ Instant play — no install required  
+
+---
+
+## 🕹️ Controls
+
+| Action | Key |
+|--------|-----|
+| Move   | A / D or ← / → |
+| Shoot  | Space |
+| Survive | Good luck |
+
+---
+
+## 🚀 Play Online
+
+No downloads. No setup. Just click and suffer:
+
+👉 https://uwu-invaders-uwu.pages.dev/
+
+---
+
+## 🛠️ Tech Stack
+
+- HTML5 Canvas  
+- JavaScript  
+- Pure chaos  
+
+---
+
+## 📸 Preview
+
+<p align="center">
+  <img src="https://uwu-invaders-uwu.pages.dev/preview.gif" width="500" />
+</p>
+
+---
+
+## 🧠 Inspiration
+
+Inspired by classic arcade shooters where:
+- enemies descend endlessly  
+- reflexes matter  
+- and survival is temporary  
+
+Modern browser-based shooters often follow similar simple mechanics—move, shoot, survive waves of enemies—keeping gameplay fast and accessible :contentReference[oaicite:1]{index=1}
+
+---
+
+## ⚠️ Warning
+
+This game may cause:
+- frustration  
+- skill issues  
+- uncontrollable "UwU" reactions  
+
+---
+
+## ❤️ Contributing
+
+Pull requests are welcome.  
+If you break the game, that's just new gameplay.
+
+---
+
+## 📜 License
+
+MIT — go wild.
+
+---
+
+<p align="center">
+  made with questionable decisions and UwU energy
+</p>
