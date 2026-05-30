@@ -127,16 +127,14 @@ export const initLevel = (level: number) => {
   gameState.alienDirection = 1;
 };
 
-export const spawnParticles = (x: number, y: number, baseColor: string, count: number = 80) => {
-  // Determine secondary colors based on the base color
-  const secondaryColor = baseColor === '#f0f' ? '#ff80ff' : '#ffff80';
-  const tertiaryColor = '#ffffff';
+export const spawnParticles = (x: number, y: number, baseColor: string, count: number = 100) => {
+  const NEON_COLORS = ['#ff00ff', '#00ffff', '#00ff00', '#ffff00', '#ff0000', '#ffffff'];
 
   // 1. Fast, bright initial burst
-  for (let i = 0; i < count * 0.4; i++) {
+  for (let i = 0; i < count * 0.5; i++) {
     const angle = Math.random() * Math.PI * 2;
-    const speed = Math.random() * 40 + 25; // Faster burst
-    const life = Math.random() * 0.4 + 0.1; // Shorter life
+    const speed = Math.random() * 40 + 25;
+    const life = Math.random() * 0.6 + 0.2;
 
     gameState.particles.push({
       id: getId(), x, y, z: 0,
@@ -145,15 +143,15 @@ export const spawnParticles = (x: number, y: number, baseColor: string, count: n
       vz: (Math.random() - 0.5) * 40,
       life: life,
       maxLife: life,
-      color: Math.random() > 0.5 ? secondaryColor : tertiaryColor,
+      color: NEON_COLORS[Math.floor(Math.random() * NEON_COLORS.length)],
     });
   }
 
   // 2. Slower, longer-lasting embers
-  for (let i = 0; i < count * 0.6; i++) {
+  for (let i = 0; i < count * 0.5; i++) {
     const angle = Math.random() * Math.PI * 2;
-    const speed = Math.random() * 15 + 5; // Slower embers
-    const life = Math.random() * 1.2 + 0.8; // Longer life
+    const speed = Math.random() * 15 + 5;
+    const life = Math.random() * 1.5 + 1.0;
 
     gameState.particles.push({
       id: getId(), x, y, z: 0,
@@ -162,7 +160,7 @@ export const spawnParticles = (x: number, y: number, baseColor: string, count: n
       vz: (Math.random() - 0.5) * 20,
       life: life,
       maxLife: life,
-      color: baseColor,
+      color: NEON_COLORS[Math.floor(Math.random() * NEON_COLORS.length)],
     });
   }
 };
