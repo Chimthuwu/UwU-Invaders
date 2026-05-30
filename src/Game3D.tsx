@@ -186,6 +186,7 @@ const GameLogic = () => {
     for (let i = gameState.particles.length - 1; i >= 0; i--) {
       const p = gameState.particles[i];
       if (p.life <= 0) continue;
+      p.vy -= 20 * delta; // Gravity
       p.x += p.vx * delta; p.y += p.vy * delta; p.z += p.vz * delta; p.life -= delta;
     }
 

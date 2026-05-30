@@ -127,22 +127,42 @@ export const initLevel = (level: number) => {
   gameState.alienDirection = 1;
 };
 
-export const spawnParticles = (x: number, y: number, color: string, count: number = 50) => {
-  const secondaryColor = '#ffffff';
-  for (let i = 0; i < count; i++) {
+export const spawnParticles = (x: number, y: number, baseColor: string, count: number = 80) => {
+  // Determine secondary colors based on the base color
+  const secondaryColor = baseColor === '#f0f' ? '#ff80ff' : '#ffff80';
+  const tertiaryColor = '#ffffff';
+
+  // 1. Fast, bright initial burst
+  for (let i = 0; i < count * 0.4; i++) {
     const angle = Math.random() * Math.PI * 2;
-    const speed = Math.random() * 20 + 10;
-    const life = Math.random() * 1.5 + 0.5;
-    
+    const speed = Math.random() * 40 + 25; // Faster burst
+    const life = Math.random() * 0.4 + 0.1; // Shorter life
+
     gameState.particles.push({
-      id: getId(),
-      x, y, z: 0,
+      id: getId(), x, y, z: 0,
       vx: Math.cos(angle) * speed,
       vy: Math.sin(angle) * speed,
+      vz: (Math.random() - 0.5) * 40,
+      life: life,
+      maxLife: life,
+      color: Math.random() > 0.5 ? secondaryColor : tertiaryColor,
+    });
+  }
+
+  // 2. Slower, longer-lasting embers
+  for (let i = 0; i < count * 0.6; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 15 + 5; // Slower embers
+    const life = Math.random() * 1.2 + 0.8; // Longer life
+
+    gameState.particles.push({
+      id: getId(), x, y, z: 0,
+      vx: Math.cos(angle) * speed * 0.5,
+      vy: Math.sin(angle) * speed * 0.5,
       vz: (Math.random() - 0.5) * 20,
       life: life,
       maxLife: life,
-      color: Math.random() > 0.3 ? color : secondaryColor,
+      color: baseColor,
     });
   }
 };
